@@ -16,11 +16,29 @@ public class Robot extends IterativeRobot
 	
 	private class Dashboard
 	{
-		NetworkTable table;
+		private NetworkTable table;
+		private NetworkTableEntry eventEntry, matchTypeEntry, matchNumEntry;
+		private NetworkTableEntry modeEntry, timeEntry;
+		private NetworkTableEntry batteryEntry;
+		private NetworkTableEntry allianceEntry, stationEntry;
+		private NetworkTableEntry rngEntry;
+		private int timer;
 		
 		public Dashboard()
 		{
 			this.table = NetworkTableInstance.getDefault().getTable("SaintsBotDS");
+			
+			this.eventEntry = this.table.getEntry("event");
+			this.matchTypeEntry = this.table.getEntry("matchType");
+			this.matchNumEntry = this.table.getEntry("matchNum");
+			this.modeEntry = this.table.getEntry("matchMode");
+			this.timeEntry = this.table.getEntry("time");
+			this.batteryEntry = this.table.getEntry("battery");
+			this.allianceEntry = this.table.getEntry("alliance");
+			this.stationEntry = this.table.getEntry("station");
+			this.rngEntry = this.table.getEntry("rng");
+			
+			this.timer = 0;
 		}
 	}
 }
