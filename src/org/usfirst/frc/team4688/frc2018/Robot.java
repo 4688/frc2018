@@ -21,7 +21,7 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry modeEntry, timeEntry;
 		private NetworkTableEntry batteryEntry;
 		private NetworkTableEntry allianceEntry, stationEntry;
-		private NetworkTableEntry rngEntry;
+		private NetworkTableEntry platesEntry;
 		private int timer;
 		
 		public Dashboard()
@@ -36,7 +36,7 @@ public class Robot extends IterativeRobot
 			this.batteryEntry = this.table.getEntry("battery");
 			this.allianceEntry = this.table.getEntry("alliance");
 			this.stationEntry = this.table.getEntry("station");
-			this.rngEntry = this.table.getEntry("rng");
+			this.platesEntry = this.table.getEntry("plates");
 			
 			this.timer = 0;
 		}
