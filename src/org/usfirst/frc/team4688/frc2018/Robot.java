@@ -19,7 +19,27 @@ public class Robot extends IterativeRobot
 		this.dashboard.updateContinuous();
 	}
 	
-	private class Dashboard
+	public void disabledInit()
+	{
+		this.dashboard.updateMode("Disabled");
+	}
+	
+	public void autonomousInit()
+	{
+		this.dashboard.updateMode("Auto");
+	}
+	
+	public void teleopInit()
+	{
+		this.dashboard.updateMode("Teleop");
+	}
+	
+	public void testInit()
+	{
+		this.dashboard.updateMode("Test");
+	}
+	
+	private static class Dashboard
 	{
 		private NetworkTable table;
 		private NetworkTableEntry eventEntry, matchTypeEntry, matchNumEntry;
@@ -103,6 +123,11 @@ public class Robot extends IterativeRobot
 			}
 			
 			this.timer += 1;
+		}
+		
+		public void updateMode(String mode)
+		{
+			this.modeEntry.setString(mode);
 		}
 	}
 }
