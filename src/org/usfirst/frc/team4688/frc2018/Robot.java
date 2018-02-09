@@ -14,7 +14,7 @@ public class Robot extends IterativeRobot
 	
 	public void robotInit()
 	{
-		this.dashboard = new Dashboard();
+		this.dashboard = new Dashboard("SaintsBotDS");
 		this.matt = new MattDupuis(JOYSTICK_USB);
 	}
 	
@@ -53,9 +53,9 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry platesEntry;
 		private int timer;
 		
-		public Dashboard()
+		public Dashboard(String tableKey)
 		{
-			this.table = NetworkTableInstance.getDefault().getTable("SaintsBotDS");
+			this.table = NetworkTableInstance.getDefault().getTable(tableKey);
 			
 			this.eventEntry = this.table.getEntry("event");
 			this.matchTypeEntry = this.table.getEntry("matchType");
