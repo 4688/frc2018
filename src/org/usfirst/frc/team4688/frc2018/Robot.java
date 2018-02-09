@@ -14,6 +14,11 @@ public class Robot extends IterativeRobot
 		this.dashboard = new Dashboard();
 	}
 	
+	public void robotPeriodic()
+	{
+		this.dashboard.updateContinuous();
+	}
+	
 	private class Dashboard
 	{
 		private NetworkTable table;
@@ -39,6 +44,65 @@ public class Robot extends IterativeRobot
 			this.platesEntry = this.table.getEntry("plates");
 			
 			this.timer = 0;
+		}
+		
+		public void updateContinuous()
+		{
+			DriverStation ds = DriverStation.getInstance();
+			
+			if (this.timer % 5 == 0)
+			{
+				String event = ds.getEventName();
+				this.eventEntry.setString(event);
+				
+				String matchType;
+				switch (ds.getMatchType())
+				{
+					case Qualification:
+						matchType = "Quals";
+						break;
+					case Elimination:
+						matchType = "Elims";
+						break;
+					case Practice:
+						matchType = "Practice";
+						break;
+					default:
+						matchType = "Match";
+				}
+				this.matchTypeEntry.setString(matchType);
+				
+				int matchNum = ds.getMatchNumber();
+				this.matchNumEntry.setNumber(matchNum);
+				
+				double time = ds.getMatchTime();
+				this.timeEntry.setDouble(time);
+				
+				double battery = RobotController.getBatteryVoltage();
+				this.batteryEntry.setDouble(battery);
+				
+				String alliance;
+				switch (ds.getAlliance())
+				{
+					case Red:
+						alliance = "Red";
+						break;
+					case Blue:
+						alliance = "Blue";
+						break;
+					default:
+						alliance = "Station";
+				}
+				this.allianceEntry.setString(alliance);
+				
+				int station = ds.getLocation();
+				this.stationEntry.setNumber(station);
+				
+				String plates = ds.getGameSpecificMessage();
+				this.platesEntry.setString(plates);
+			}
+			
+			this.timer += 1;
 		}
 	}
 }
