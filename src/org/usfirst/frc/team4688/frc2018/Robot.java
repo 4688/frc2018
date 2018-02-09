@@ -7,11 +7,15 @@ import edu.wpi.first.wpilibj.*;
 
 public class Robot extends IterativeRobot
 {
+	private final int JOYSTICK_USB = 0;
+	
 	private Dashboard dashboard;
+	private MattDupuis matt;
 	
 	public void robotInit()
 	{
 		this.dashboard = new Dashboard();
+		this.matt = new MattDupuis(JOYSTICK_USB);
 	}
 	
 	public void robotPeriodic()
@@ -128,6 +132,16 @@ public class Robot extends IterativeRobot
 		public void updateMode(String mode)
 		{
 			this.modeEntry.setString(mode);
+		}
+	}
+
+	private static class MattDupuis
+	{
+		private Joystick joystick;
+		
+		public MattDupuis(int joystickUsb)
+		{
+			this.joystick = new Joystick(joystickUsb);
 		}
 	}
 }
