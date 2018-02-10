@@ -144,14 +144,16 @@ public class Robot extends IterativeRobot
 			this.joystick = new Joystick(joystickUsb);
 		}
 		
-		public double getX()
+		public double getForward()
 		{
 			return this.joystick.getRawAxis(4);
 		}
 		
-		public double getY()
+		public double getTurn()
 		{
 			return -this.joystick.getRawAxis(1);
 		}
+		
+		
 	}
 }
