@@ -177,6 +177,30 @@ public class Robot extends IterativeRobot
 			this.rrm.follow(this.rfm);
 		}
 		
+		public void drive(MattDupuis matt)
+		{
+			double y = matt.getForward();
+			double x = matt.getTurn();
+			double l = 0d, r = 0d;
+			if (Math.abs(x) < 0.04)
+			{
+				l = y;
+				r = -y;
+			}
+			else if (Math.abs(y) < 0.04)
+			{
+				l = x;
+				r = x;
+			}
+			else if (Math.abs(x) >= 0.04)
+			{
+				l = x + y;
+				r = x - y;
+			}
+			this.setLSpd(l);
+			this.setRSpd(r);
+		}
+		
 		public void setLSpd(double spd)
 		{
 			spd = Math.min(Math.max(spd, -1d), 1d);
