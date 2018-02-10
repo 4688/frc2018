@@ -13,11 +13,13 @@ public class Robot extends IterativeRobot
 	
 	private Dashboard dashboard;
 	private MattDupuis matt;
+	private DriveTrain driveTrain;
 	
 	public void robotInit()
 	{
 		this.dashboard = new Dashboard("SaintsBotDS");
 		this.matt = new MattDupuis(JOYSTICK_USB);
+		this.driveTrain = new DriveTrain();
 	}
 	
 	public void robotPeriodic()
@@ -38,6 +40,11 @@ public class Robot extends IterativeRobot
 	public void teleopInit()
 	{
 		this.dashboard.updateMode("Teleop");
+	}
+	
+	public void teleopPeriodic()
+	{
+		this.driveTrain.drive(this.matt);
 	}
 	
 	public void testInit()
