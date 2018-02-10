@@ -155,12 +155,12 @@ public class Robot extends IterativeRobot
 		
 		public double getForward()
 		{
-			return this.joystick.getRawAxis(4);
+			return -this.joystick.getRawAxis(1);
 		}
 		
 		public double getTurn()
 		{
-			return -this.joystick.getRawAxis(1);
+			return this.joystick.getRawAxis(4);
 		}
 		
 		public boolean getTurbo()
