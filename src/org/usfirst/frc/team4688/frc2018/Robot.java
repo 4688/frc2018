@@ -164,7 +164,10 @@ public class Robot extends IterativeRobot
 	
 	private static class DriveTrain
 	{
-		TalonSRX lfm, lrm, rfm, rrm;
+		private static final double DRIVE_FACTOR = 0.5;
+		private static final double TURBO_FACTOR = 1.5;
+		
+		private TalonSRX lfm, lrm, rfm, rrm;
 		
 		public DriveTrain()
 		{
@@ -182,6 +185,8 @@ public class Robot extends IterativeRobot
 			double y = matt.getForward();
 			double x = matt.getTurn();
 			double l = 0d, r = 0d;
+			double d = DRIVE_FACTOR;
+			double t = matt.getTurbo() ? TURBO_FACTOR : 1d;
 			if (Math.abs(x) < 0.04)
 			{
 				l = y;
@@ -197,8 +202,8 @@ public class Robot extends IterativeRobot
 				l = x + y;
 				r = x - y;
 			}
-			this.setLSpd(l);
-			this.setRSpd(r);
+			this.setLSpd(l * d * t);
+			this.setRSpd(r * d * t);
 		}
 		
 		public void setLSpd(double spd)
