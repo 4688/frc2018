@@ -154,6 +154,15 @@ public class Robot extends IterativeRobot
 			return -this.joystick.getRawAxis(1);
 		}
 		
-		
+		public boolean getTurbo()
+		{
+			return this.joystick.getRawButton(6);
+		}
+	}
+	
+	private static class DriveTrain
+	{
+		public DriveTrain()
+		{}
 	}
 }
