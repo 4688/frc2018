@@ -2,6 +2,8 @@
 
 package org.usfirst.frc.team4688.frc2018;
 
+import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.*;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.*;
 
@@ -162,7 +164,43 @@ public class Robot extends IterativeRobot
 	
 	private static class DriveTrain
 	{
+		TalonSRX lfm, lrm, rfm, rrm;
+		
 		public DriveTrain()
-		{}
+		{
+			this.lfm = new TalonSRX(1);
+			this.lrm = new TalonSRX(3);
+			this.rfm = new TalonSRX(2);
+			this.rrm = new TalonSRX(4);
+			
+			this.lrm.follow(this.lfm);
+			this.rrm.follow(this.rfm);
+		}
+		
+		public void setLSpd(double spd)
+		{
+			spd = Math.min(Math.max(spd, -1d), 1d);
+			if (Math.abs(spd) > 0.04)
+			{
+				this.lfm.set(ControlMode.PercentOutput, spd);
+			}
+			else
+			{
+				this.lfm.set(ControlMode.PercentOutput, 0d);
+			}
+		}
+		
+		public void setRSpd(double spd)
+		{
+			spd = Math.min(Math.max(spd, -1), 1);
+			if (Math.abs(spd) > 0.04)
+			{
+				this.rfm.set(ControlMode.PercentOutput, spd);
+			}
+			else
+			{
+				this.rfm.set(ControlMode.PercentOutput, 0d);
+			}
+		}
 	}
 }
