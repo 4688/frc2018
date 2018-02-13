@@ -171,6 +171,12 @@ public class Robot extends IterativeRobot
 		{
 			return 1d + this.joystick.getRawAxis(3) * 0.5;
 		}
+		
+		public double getIntake()
+		{
+			double m = this.joystick.getRawButton(2) ? 1d : -1d;
+			return this.joystick.getRawAxis(2);
+		}
 	}
 	
 	private static class DriveTrain
@@ -239,6 +245,24 @@ public class Robot extends IterativeRobot
 			{
 				this.rfm.set(ControlMode.PercentOutput, 0d);
 			}
+		}
+	}
+
+	private static class Hugger
+	{
+		TalonSRX intakeL, intakeR;
+		
+		public Hugger()
+		{
+			this.intakeL = new TalonSRX(5);
+			this.intakeR = new TalonSRX(6);
+		}
+		
+		public void control(MattDupuis matt)
+		{
+			double spd = matt.getIntake();
+			this.intakeL.set(ControlMode.PercentOutput, spd);
+			this.intakeR.set(ControlMode.PercentOutput, -spd);
 		}
 	}
 }
