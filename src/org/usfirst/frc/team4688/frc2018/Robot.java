@@ -17,6 +17,8 @@ public class Robot extends IterativeRobot
 	
 	public void robotInit()
 	{
+		
+		
 		this.dashboard = new Dashboard("SaintsBotDS");
 		this.matt = new MattDupuis(JOYSTICK_USB);
 		this.driveTrain = new DriveTrain();
@@ -155,17 +157,19 @@ public class Robot extends IterativeRobot
 		
 		public double getForward()
 		{
-			return -this.joystick.getRawAxis(1);
+			double fwd = -this.joystick.getRawAxis(1);
+			return fwd * Math.abs(fwd);
 		}
 		
 		public double getTurn()
 		{
-			return this.joystick.getRawAxis(4);
+			double turn = this.joystick.getRawAxis(4);
+			return turn * Math.abs(turn);
 		}
 		
-		public boolean getTurbo()
+		public double getTurbo()
 		{
-			return this.joystick.getRawButton(6);
+			return 1d + this.joystick.getRawAxis(3) * 0.5;
 		}
 	}
 	
@@ -193,7 +197,7 @@ public class Robot extends IterativeRobot
 			double x = matt.getTurn();
 			double l = 0d, r = 0d;
 			double d = DRIVE_FACTOR;
-			double t = matt.getTurbo() ? TURBO_FACTOR : 1d;
+			double t = matt.getTurbo();
 			if (Math.abs(x) < 0.04)
 			{
 				l = y;
@@ -215,7 +219,6 @@ public class Robot extends IterativeRobot
 		
 		public void setLSpd(double spd)
 		{
-			spd = Math.min(Math.max(spd, -1d), 1d);
 			if (Math.abs(spd) > 0.04)
 			{
 				this.lfm.set(ControlMode.PercentOutput, spd);
@@ -228,7 +231,6 @@ public class Robot extends IterativeRobot
 		
 		public void setRSpd(double spd)
 		{
-			spd = Math.min(Math.max(spd, -1), 1);
 			if (Math.abs(spd) > 0.04)
 			{
 				this.rfm.set(ControlMode.PercentOutput, spd);
