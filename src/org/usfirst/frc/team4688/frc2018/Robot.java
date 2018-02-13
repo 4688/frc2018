@@ -181,6 +181,23 @@ public class Robot extends IterativeRobot
 			double reverse = this.joystick.getRawButton(2) ? -1d : 0d;
 			return in * reverse;
 		}
+		
+		public double getTilt()
+		{
+			int dpad = this.joystick.getPOV();
+			if (dpad == 0)
+			{
+				return 0.5d;
+			}
+			else if (dpad == 180)
+			{
+				return -0.5d;
+			}
+			else
+			{
+				return 0d;
+			}
+		}
 	}
 	
 	private static class DriveTrain
@@ -255,18 +272,23 @@ public class Robot extends IterativeRobot
 	private static class Hugger
 	{
 		TalonSRX intakeL, intakeR;
+		Spark tilt;
 		
 		public Hugger()
 		{
 			this.intakeL = new TalonSRX(5);
 			this.intakeR = new TalonSRX(6);
+			this.tilt = new Spark(9);
 		}
 		
 		public void control(MattDupuis matt)
 		{
-			double spd = matt.getIntake();
-			this.intakeL.set(ControlMode.PercentOutput, spd);
-			this.intakeR.set(ControlMode.PercentOutput, -spd);
+			double intake = matt.getIntake();
+			this.intakeL.set(ControlMode.PercentOutput, intake);
+			this.intakeR.set(ControlMode.PercentOutput, -intake);
+			
+			double tilt = matt.getTilt();
+			this.tilt.set(tilt);
 		}
 	}
 }
