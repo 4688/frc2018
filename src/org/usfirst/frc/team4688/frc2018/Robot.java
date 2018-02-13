@@ -2,16 +2,26 @@
 
 package org.usfirst.frc.team4688.frc2018;
 
+import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.*;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.*;
 
 public class Robot extends IterativeRobot
 {
+	private final int JOYSTICK_USB = 0;
+	
 	private Dashboard dashboard;
+	private MattDupuis matt;
+	private DriveTrain driveTrain;
 	
 	public void robotInit()
 	{
-		this.dashboard = new Dashboard();
+		
+		
+		this.dashboard = new Dashboard("SaintsBotDS");
+		this.matt = new MattDupuis(JOYSTICK_USB);
+		this.driveTrain = new DriveTrain();
 	}
 	
 	public void robotPeriodic()
@@ -34,6 +44,11 @@ public class Robot extends IterativeRobot
 		this.dashboard.updateMode("Teleop");
 	}
 	
+	public void teleopPeriodic()
+	{
+		this.driveTrain.drive(this.matt);
+	}
+	
 	public void testInit()
 	{
 		this.dashboard.updateMode("Test");
@@ -49,9 +64,9 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry platesEntry;
 		private int timer;
 		
-		public Dashboard()
+		public Dashboard(String tableKey)
 		{
-			this.table = NetworkTableInstance.getDefault().getTable("SaintsBotDS");
+			this.table = NetworkTableInstance.getDefault().getTable(tableKey);
 			
 			this.eventEntry = this.table.getEntry("event");
 			this.matchTypeEntry = this.table.getEntry("matchType");
@@ -128,6 +143,102 @@ public class Robot extends IterativeRobot
 		public void updateMode(String mode)
 		{
 			this.modeEntry.setString(mode);
+		}
+	}
+
+	private static class MattDupuis
+	{
+		private Joystick joystick;
+		
+		public MattDupuis(int joystickUsb)
+		{
+			this.joystick = new Joystick(joystickUsb);
+		}
+		
+		public double getForward()
+		{
+			double fwd = -this.joystick.getRawAxis(1);
+			return fwd * Math.abs(fwd);
+		}
+		
+		public double getTurn()
+		{
+			double turn = this.joystick.getRawAxis(4);
+			return turn * Math.abs(turn);
+		}
+		
+		public double getTurbo()
+		{
+			return 1d + this.joystick.getRawAxis(3) * 0.5;
+		}
+	}
+	
+	private static class DriveTrain
+	{
+		private static final double DRIVE_FACTOR = 0.5;
+		private static final double TURBO_FACTOR = 1.5;
+		
+		private TalonSRX lfm, lrm, rfm, rrm;
+		
+		public DriveTrain()
+		{
+			this.lfm = new TalonSRX(1);
+			this.lrm = new TalonSRX(3);
+			this.rfm = new TalonSRX(2);
+			this.rrm = new TalonSRX(4);
+			
+			this.lrm.follow(this.lfm);
+			this.rrm.follow(this.rfm);
+		}
+		
+		public void drive(MattDupuis matt)
+		{
+			double y = matt.getForward();
+			double x = matt.getTurn();
+			double l = 0d, r = 0d;
+			double d = DRIVE_FACTOR;
+			double t = matt.getTurbo();
+			if (Math.abs(x) < 0.04)
+			{
+				l = y;
+				r = -y;
+			}
+			else if (Math.abs(y) < 0.04)
+			{
+				l = x;
+				r = x;
+			}
+			else if (Math.abs(x) >= 0.04)
+			{
+				l = x + y;
+				r = x - y;
+			}
+			this.setLSpd(l * d * t);
+			this.setRSpd(r * d * t);
+		}
+		
+		public void setLSpd(double spd)
+		{
+			if (Math.abs(spd) > 0.04)
+			{
+				this.lfm.set(ControlMode.PercentOutput, spd);
+			}
+			else
+			{
+				this.lfm.set(ControlMode.PercentOutput, 0d);
+			}
+		}
+		
+		public void setRSpd(double spd)
+		{
+			if (Math.abs(spd) > 0.04)
+			{
+				this.rfm.set(ControlMode.PercentOutput, spd);
+			}
+			else
+			{
+				this.rfm.set(ControlMode.PercentOutput, 0d);
+			}
 		}
 	}
 }
