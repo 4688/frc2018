@@ -177,8 +177,9 @@ public class Robot extends IterativeRobot
 		
 		public double getIntake()
 		{
-			double reverseReverse = this.joystick.getRawButton(2) ? 1d : -1d;
-			return this.joystick.getRawAxis(2) * reverseReverse;
+			double in = this.joystick.getRawButton(6) ? 1d : 0d;
+			double reverse = this.joystick.getRawButton(2) ? -1d : 0d;
+			return in * reverse;
 		}
 	}
 	
