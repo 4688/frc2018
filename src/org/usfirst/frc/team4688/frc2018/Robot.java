@@ -14,6 +14,7 @@ public class Robot extends IterativeRobot
 	private Dashboard dashboard;
 	private MattDupuis matt;
 	private DriveTrain driveTrain;
+	private Hugger hugger;
 	
 	public void robotInit()
 	{
@@ -22,6 +23,7 @@ public class Robot extends IterativeRobot
 		this.dashboard = new Dashboard("SaintsBotDS");
 		this.matt = new MattDupuis(JOYSTICK_USB);
 		this.driveTrain = new DriveTrain();
+		this.hugger = new Hugger();
 	}
 	
 	public void robotPeriodic()
@@ -47,6 +49,7 @@ public class Robot extends IterativeRobot
 	public void teleopPeriodic()
 	{
 		this.driveTrain.drive(this.matt);
+		this.hugger.control(this.matt);
 	}
 	
 	public void testInit()
