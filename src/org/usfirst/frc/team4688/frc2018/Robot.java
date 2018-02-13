@@ -187,11 +187,11 @@ public class Robot extends IterativeRobot
 			int dpad = this.joystick.getPOV();
 			if (dpad == 0)
 			{
-				return 0.5d;
+				return 1d;
 			}
 			else if (dpad == 180)
 			{
-				return -0.5d;
+				return -1d;
 			}
 			else
 			{
