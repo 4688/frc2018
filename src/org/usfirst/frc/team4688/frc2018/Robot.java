@@ -177,8 +177,8 @@ public class Robot extends IterativeRobot
 		
 		public double getIntake()
 		{
-			double in = this.joystick.getRawButton(6) ? 1d : 0d;
-			double reverse = this.joystick.getRawButton(2) ? -1d : 0d;
+			double in = this.joystick.getRawButton(6) ? -1d : 0d;
+			double reverse = this.joystick.getRawButton(2) ? -1d : 1d;
 			return in * reverse;
 		}
 		
@@ -290,11 +290,11 @@ public class Robot extends IterativeRobot
 			this.intakeR.set(ControlMode.PercentOutput, -intake);
 			
 			double tilt = matt.getTilt();
-			if (this.lowLim.get())
+			if (!this.lowLim.get())
 			{
 				tilt = Math.max(tilt, 0);
 			}
-			else if (this.highLim.get())
+			else if (!this.highLim.get())
 			{
 				tilt = Math.min(tilt, 0);
 			}
