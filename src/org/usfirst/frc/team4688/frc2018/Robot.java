@@ -278,7 +278,7 @@ public class Robot extends IterativeRobot
 		{
 			this.intakeL = new TalonSRX(5);
 			this.intakeR = new TalonSRX(6);
-			this.tilt = new Spark(9);
+			this.tilt = new Spark(0);
 			this.lowLim = new DigitalInput(0);
 			this.highLim = new DigitalInput(1);
 		}
