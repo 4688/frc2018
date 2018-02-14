@@ -273,12 +273,15 @@ public class Robot extends IterativeRobot
 	{
 		TalonSRX intakeL, intakeR;
 		Spark tilt;
+		DigitalInput lowLim, highLim;
 		
 		public Hugger()
 		{
 			this.intakeL = new TalonSRX(5);
 			this.intakeR = new TalonSRX(6);
 			this.tilt = new Spark(9);
+			this.lowLim = new DigitalInput(0);
+			this.highLim = new DigitalInput(1);
 		}
 		
 		public void control(MattDupuis matt)
@@ -288,6 +291,14 @@ public class Robot extends IterativeRobot
 			this.intakeR.set(ControlMode.PercentOutput, -intake);
 			
 			double tilt = matt.getTilt();
+			if (this.lowLim.get())
+			{
+				tilt = Math.max(tilt, 0);
+			}
+			else if (this.highLim.get())
+			{
+				tilt = Math.min(tilt, 0);
+			}
 			this.tilt.set(tilt);
 		}
 	}
