@@ -203,7 +203,6 @@ public class Robot extends IterativeRobot
 	private static class DriveTrain
 	{
 		private static final double DRIVE_FACTOR = 0.5;
-		private static final double TURBO_FACTOR = 1.5;
 		
 		private TalonSRX lfm, lrm, rfm, rrm;
 		
