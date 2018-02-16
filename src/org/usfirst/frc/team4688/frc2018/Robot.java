@@ -48,7 +48,7 @@ public class Robot extends IterativeRobot
 	
 	public void teleopPeriodic()
 	{
-		this.driveTrain.drive(this.matt);
+		this.driveTrain.control(this.matt);
 		this.hugger.control(this.matt);
 	}
 	
@@ -217,7 +217,7 @@ public class Robot extends IterativeRobot
 			this.rrm.follow(this.rfm);
 		}
 		
-		public void drive(MattDupuis matt)
+		public void control(MattDupuis matt)
 		{
 			double y = matt.getForward();
 			double x = matt.getTurn();
