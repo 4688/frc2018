@@ -202,11 +202,11 @@ public class Robot extends IterativeRobot
 			int dpad = this.joystick.getPOV();
 			if (dpad == 0)
 			{
-				return 1d;
+				return -1d;
 			}
 			else if (dpad == 180)
 			{
-				return -1d;
+				return 1d;
 			}
 			else
 			{
@@ -307,11 +307,11 @@ public class Robot extends IterativeRobot
 			double tilt = matt.getTilt();
 			if (!this.lowLim.get())
 			{
-				tilt = Math.max(tilt, 0);
+				tilt = Math.min(tilt, 0);
 			}
 			else if (!this.highLim.get())
 			{
-				tilt = Math.min(tilt, 0);
+				tilt = Math.max(tilt, 0);
 			}
 			this.tilt.set(tilt);
 		}
@@ -332,11 +332,11 @@ public class Robot extends IterativeRobot
 		
 		public int getRoutine()
 		{
-			int n1 = (this.a1.get() ? 1 : 0) << 0;
-			int n2 = (this.a2.get() ? 1 : 0) << 1;
-			int n4 = (this.a4.get() ? 1 : 0) << 2;
-			int n8 = (this.a8.get() ? 1 : 0) << 3;
-			int n16 = (this.a16.get() ? 1 : 0) << 4;
+			int n1 = (this.a1.get() ? 0 : 1) << 0;
+			int n2 = (this.a2.get() ? 0 : 1) << 1;
+			int n4 = (this.a4.get() ? 0 : 1) << 2;
+			int n8 = (this.a8.get() ? 0 : 1) << 3;
+			int n16 = (this.a16.get() ? 0 : 1) << 4;
 			return n1 + n2 + n4 + n8 + n16;
 		}
 	}
