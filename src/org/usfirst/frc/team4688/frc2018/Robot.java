@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot
 	
 	public void robotPeriodic()
 	{
-		this.dashboard.updateContinuous();
+		this.dashboard.updateMatchInfo();
 	}
 	
 	public void disabledInit()
@@ -84,7 +84,7 @@ public class Robot extends IterativeRobot
 			this.timer = 0;
 		}
 		
-		public void updateContinuous()
+		public void updateMatchInfo()
 		{
 			DriverStation ds = DriverStation.getInstance();
 			
