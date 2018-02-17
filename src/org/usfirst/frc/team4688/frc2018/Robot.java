@@ -15,6 +15,7 @@ public class Robot extends IterativeRobot
 	private MattDupuis matt;
 	private DriveTrain driveTrain;
 	private Hugger hugger;
+	private Lift lift;
 	private Autonomous auto;
 	
 	public void robotInit()
@@ -23,6 +24,7 @@ public class Robot extends IterativeRobot
 		this.matt = new MattDupuis(JOYSTICK_USB);
 		this.driveTrain = new DriveTrain();
 		this.hugger = new Hugger();
+		this.lift = new Lift();
 		this.auto = new Autonomous();
 	}
 	
@@ -52,6 +54,7 @@ public class Robot extends IterativeRobot
 	{
 		this.driveTrain.control(this.matt);
 		this.hugger.control(this.matt);
+		this.lift.control(this.matt);
 	}
 	
 	public void testInit()
@@ -314,6 +317,26 @@ public class Robot extends IterativeRobot
 				tilt = Math.max(tilt, 0);
 			}
 			this.tilt.set(tilt);
+		}
+	}
+	
+	private static class Lift
+	{
+		DigitalInput lowLim, highLim;
+		Spark lifty;
+		Servo lock;
+		
+		public Lift()
+		{
+			this.lowLim = new DigitalInput(2);
+			this.highLim = new DigitalInput(3);
+			this.lifty = new Spark(1);
+			this.lock = new Servo(2);
+		}
+		
+		public void control(MattDupuis matt)
+		{
+			System.out.println(this.lowLim.get() + "\t" + this.highLim.get());
 		}
 	}
 	
