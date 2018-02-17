@@ -301,4 +301,28 @@ public class Robot extends IterativeRobot
 			this.tilt.set(tilt);
 		}
 	}
+	
+	private static class Autonomous
+	{
+		DigitalInput a1, a2, a4, a8, a16;
+		
+		public Autonomous()
+		{
+			this.a1 = new DigitalInput(19);
+			this.a2 = new DigitalInput(20);
+			this.a4 = new DigitalInput(21);
+			this.a8 = new DigitalInput(22);
+			this.a16 = new DigitalInput(23);
+		}
+		
+		public int getRoutine()
+		{
+			int n1 = (this.a1.get() ? 1 : 0) << 0;
+			int n2 = (this.a2.get() ? 1 : 0) << 1;
+			int n4 = (this.a4.get() ? 1 : 0) << 2;
+			int n8 = (this.a8.get() ? 1 : 0) << 3;
+			int n16 = (this.a16.get() ? 1 : 0) << 4;
+			return n1 + n2 + n4 + n8 + n16;
+		}
+	}
 }
