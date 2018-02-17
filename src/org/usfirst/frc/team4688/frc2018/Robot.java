@@ -153,7 +153,10 @@ public class Robot extends IterativeRobot
 		
 		public void updateRoutine(int routine)
 		{
-			this.routineEntry.setNumber(routine);
+			if (this.timer % 5 == 0)
+			{
+				this.routineEntry.setNumber(routine);
+			}
 		}
 	}
 
