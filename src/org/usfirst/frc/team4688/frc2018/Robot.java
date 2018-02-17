@@ -15,20 +15,21 @@ public class Robot extends IterativeRobot
 	private MattDupuis matt;
 	private DriveTrain driveTrain;
 	private Hugger hugger;
+	private Autonomous auto;
 	
 	public void robotInit()
 	{
-		
-		
 		this.dashboard = new Dashboard("SaintsBotDS");
 		this.matt = new MattDupuis(JOYSTICK_USB);
 		this.driveTrain = new DriveTrain();
 		this.hugger = new Hugger();
+		this.auto = new Autonomous();
 	}
 	
 	public void robotPeriodic()
 	{
 		this.dashboard.updateMatchInfo();
+		this.dashboard.updateRoutine(this.auto.getRoutine());
 	}
 	
 	public void disabledInit()
@@ -65,6 +66,7 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry batteryEntry;
 		private NetworkTableEntry allianceEntry, stationEntry;
 		private NetworkTableEntry platesEntry;
+		private NetworkTableEntry routineEntry;
 		private int timer;
 		
 		public Dashboard(String tableKey)
@@ -80,6 +82,7 @@ public class Robot extends IterativeRobot
 			this.allianceEntry = this.table.getEntry("alliance");
 			this.stationEntry = this.table.getEntry("station");
 			this.platesEntry = this.table.getEntry("plates");
+			this.routineEntry = this.table.getEntry("routine");
 			
 			this.timer = 0;
 		}
@@ -146,6 +149,11 @@ public class Robot extends IterativeRobot
 		public void updateMode(String mode)
 		{
 			this.modeEntry.setString(mode);
+		}
+		
+		public void updateRoutine(int routine)
+		{
+			this.routineEntry.setNumber(routine);
 		}
 	}
 
