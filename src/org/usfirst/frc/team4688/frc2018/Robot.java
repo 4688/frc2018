@@ -195,8 +195,11 @@ public class Robot extends IterativeRobot
 		
 		public double getIntake()
 		{
-			double in = this.joystick.getRawButton(6) ? -1d : 0d;
-			double reverse = this.joystick.getRawButton(2) ? -1d : 1d;
+			boolean inBtn = this.joystick.getRawButton(6);
+			boolean reverseBtn = this.joystick.getRawButton(2);
+			double in = inBtn ? -1d : 0d;
+			double reverse = reverseBtn ? -1d : 1d;
+			if (!inBtn && reverseBtn) return -0.25d;
 			return in * reverse;
 		}
 		
@@ -210,6 +213,24 @@ public class Robot extends IterativeRobot
 			else if (dpad == 180)
 			{
 				return 1d;
+			}
+			else
+			{
+				return 0d;
+			}
+		}
+		
+		public double getLift()
+		{
+			boolean up = this.joystick.getRawButton(4);
+			boolean dn = this.joystick.getRawButton(3);
+			if (up && !dn)
+			{
+				return 0.65d;
+			}
+			else if (!up && dn)
+			{
+				return -0.35d;
 			}
 			else
 			{
@@ -336,7 +357,18 @@ public class Robot extends IterativeRobot
 		
 		public void control(MattDupuis matt)
 		{
-			System.out.println(this.lowLim.get() + "\t" + this.highLim.get());
+			double lift = matt.getLift();
+			System.out.println(matt.getLift() + "\t" + (matt.getTurbo() * 2 - 2));
+			if ((lift < -0.04 && this.lowLim.get()) || (lift > 0.04 && this.highLim.get()))
+			{
+				this.lifty.set(lift);
+				this.lock.set(0d);
+			}
+			else
+			{
+				this.lifty.set(0d);
+				this.lock.set(matt.getTurbo() * 2 - 2);
+			}
 		}
 	}
 	
