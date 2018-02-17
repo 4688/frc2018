@@ -30,6 +30,7 @@ public class Robot extends IterativeRobot
 	{
 		this.dashboard.updateMatchInfo();
 		this.dashboard.updateRoutine(this.auto.getRoutine());
+		this.dashboard.tick();
 	}
 	
 	public void disabledInit()
@@ -87,6 +88,11 @@ public class Robot extends IterativeRobot
 			this.timer = 0;
 		}
 		
+		public void tick()
+		{
+			this.timer += 1;
+		}
+		
 		public void updateMatchInfo()
 		{
 			DriverStation ds = DriverStation.getInstance();
@@ -142,8 +148,6 @@ public class Robot extends IterativeRobot
 				String plates = ds.getGameSpecificMessage();
 				this.platesEntry.setString(plates);
 			}
-			
-			this.timer += 1;
 		}
 		
 		public void updateMode(String mode)
