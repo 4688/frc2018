@@ -32,6 +32,7 @@ public class Robot extends IterativeRobot
 	{
 		this.dashboard.updateMatchInfo();
 		this.dashboard.updateRoutine(this.auto.getRoutine());
+		this.dashboard.updateDriveTrain(this.driveTrain);
 		this.dashboard.tick();
 	}
 	
@@ -71,6 +72,7 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry allianceEntry, stationEntry;
 		private NetworkTableEntry platesEntry;
 		private NetworkTableEntry routineEntry;
+		private NetworkTableEntry driveEncValueEntry, gyroValueEntry;
 		private int timer;
 		
 		public Dashboard(String tableKey)
@@ -87,6 +89,8 @@ public class Robot extends IterativeRobot
 			this.stationEntry = this.table.getEntry("station");
 			this.platesEntry = this.table.getEntry("plates");
 			this.routineEntry = this.table.getEntry("routine");
+			this.driveEncValueEntry = this.table.getEntry("driveEncValue");
+			this.gyroValueEntry = this.table.getEntry("gyroValue");
 			
 			this.timer = 0;
 		}
@@ -163,6 +167,15 @@ public class Robot extends IterativeRobot
 			if (this.timer % 5 == 0)
 			{
 				this.routineEntry.setNumber(routine);
+			}
+		}
+		
+		public void updateDriveTrain(DriveTrain driveTrain)
+		{
+			if (this.timer % 5 == 0)
+			{
+				this.driveEncValueEntry.setDouble(driveTrain.getRevs());
+				this.gyroValueEntry.setDouble(driveTrain.getAngle());
 			}
 		}
 	}
@@ -304,6 +317,16 @@ public class Robot extends IterativeRobot
 			{
 				this.rfm.set(ControlMode.PercentOutput, 0d);
 			}
+		}
+		
+		public double getRevs()
+		{
+			return 0d;
+		}
+		
+		public double getAngle()
+		{
+			return 0d;
 		}
 	}
 
