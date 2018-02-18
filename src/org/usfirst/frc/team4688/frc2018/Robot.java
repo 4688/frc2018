@@ -382,7 +382,7 @@ public class Robot extends IterativeRobot
 			this.tilt = new Spark(0);
 			this.lowLim = new DigitalInput(0);
 			this.highLim = new DigitalInput(1);
-			this.tiltEnc = new Encoder(5, 4);
+			this.tiltEnc = new Encoder(4, 5);
 			this.tiltEnc.setDistancePerPulse(1d / 2048d);
 		}
 		
@@ -428,7 +428,7 @@ public class Robot extends IterativeRobot
 			this.highLim = new DigitalInput(3);
 			this.lifty = new Spark(1);
 			this.lock = new Servo(2);
-			this.liftEnc = new Encoder(7, 6);
+			this.liftEnc = new Encoder(6, 7);
 			this.liftEnc.setDistancePerPulse(1d / 2048d);
 		}
 		
