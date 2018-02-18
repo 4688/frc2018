@@ -37,6 +37,13 @@ public class Robot extends IterativeRobot
 		this.dashboard.updateHugger(this.hugger);
 		this.dashboard.updateLift(this.lift);
 		this.dashboard.tick();
+		
+		if (RobotController.getUserButton())
+		{
+			this.driveTrain.zeroSensors();
+			this.hugger.zeroSensors();
+			this.lift.zeroSensors();
+		}
 	}
 	
 	public void disabledInit()
@@ -288,7 +295,7 @@ public class Robot extends IterativeRobot
 			this.lrm = new TalonSRX(3);
 			this.rfm = new TalonSRX(2);
 			this.rrm = new TalonSRX(4);
-			this.navx = new AHRS(SerialPort.Port.kMXP);
+			this.navx = new AHRS(SPI.Port.kMXP);
 			
 			this.lrm.follow(this.lfm);
 			this.rrm.follow(this.rfm);
@@ -344,6 +351,12 @@ public class Robot extends IterativeRobot
 			}
 		}
 		
+		public void zeroSensors()
+		{
+			this.lfm.getSensorCollection().setQuadraturePosition(0, 0);
+			this.navx.reset();
+		}
+		
 		public double getRevs()
 		{
 			return this.lfm.getSensorCollection().getQuadraturePosition() / 4096d;
@@ -391,6 +404,11 @@ public class Robot extends IterativeRobot
 			this.tilt.set(tilt);
 		}
 		
+		public void zeroSensors()
+		{
+			this.tiltEnc.reset();
+		}
+		
 		public double getTravel()
 		{
 			return this.tiltEnc.getDistance();
@@ -417,17 +435,31 @@ public class Robot extends IterativeRobot
 		public void control(MattDupuis matt)
 		{
 			double lift = matt.getLift();
-			System.out.println(matt.getLift() + "\t" + (matt.getTurbo() * 2 - 2));
 			if ((lift < -0.04 && this.lowLim.get()) || (lift > 0.04 && this.highLim.get()))
 			{
+				this.disengageLock();
 				this.lifty.set(lift);
-				this.lock.set(0d);
 			}
 			else
 			{
+				this.engageLock();
 				this.lifty.set(0d);
-				this.lock.set(matt.getTurbo() * 2 - 2);
 			}
+		}
+		
+		private void engageLock()
+		{
+			this.lock.set(0.6d);
+		}
+		
+		private void disengageLock()
+		{
+			this.lock.set(1d);
+		}
+		
+		public void zeroSensors()
+		{
+			this.liftEnc.reset();
 		}
 		
 		public double getTravel()
