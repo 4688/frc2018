@@ -240,7 +240,7 @@ public class Robot extends IterativeRobot
 		{
 			boolean inBtn = this.joystick.getRawButton(6);
 			boolean reverseBtn = this.joystick.getRawButton(2);
-			double in = inBtn ? -1d : 0d;
+			double in = inBtn ? -0.8d : 0d;
 			double reverse = reverseBtn ? -1d : 1d;
 			if (!inBtn && reverseBtn) return 0.25d;
 			return in * reverse;
