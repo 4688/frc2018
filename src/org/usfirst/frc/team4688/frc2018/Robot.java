@@ -269,11 +269,11 @@ public class Robot extends IterativeRobot
 			boolean dn = this.joystick.getRawButton(3);
 			if (up && !dn)
 			{
-				return 0.75d;
+				return 0.85d;
 			}
 			else if (!up && dn)
 			{
-				return -0.4d;
+				return -0.65d;
 			}
 			else
 			{
