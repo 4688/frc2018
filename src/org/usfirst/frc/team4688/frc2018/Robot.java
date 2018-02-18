@@ -359,7 +359,7 @@ public class Robot extends IterativeRobot
 		
 		public double getRevs()
 		{
-			return this.lfm.getSensorCollection().getQuadraturePosition() / 4096d;
+			return -this.lfm.getSensorCollection().getQuadraturePosition() / 4096d;
 		}
 		
 		public double getAngle()
