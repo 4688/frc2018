@@ -76,6 +76,8 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry platesEntry;
 		private NetworkTableEntry routineEntry;
 		private NetworkTableEntry driveEncValueEntry, gyroValueEntry;
+		private NetworkTableEntry tiltEncValueEntry;
+		private NetworkTableEntry liftEncValueEntry;
 		private int timer;
 		
 		public Dashboard(String tableKey)
@@ -94,6 +96,8 @@ public class Robot extends IterativeRobot
 			this.routineEntry = this.table.getEntry("routine");
 			this.driveEncValueEntry = this.table.getEntry("driveEncValue");
 			this.gyroValueEntry = this.table.getEntry("gyroValue");
+			this.tiltEncValueEntry = this.table.getEntry("tiltEncValue");
+			this.liftEncValueEntry = this.table.getEntry("liftEncValue");
 			
 			this.timer = 0;
 		}
@@ -183,10 +187,20 @@ public class Robot extends IterativeRobot
 		}
 		
 		public void updateHugger(Hugger hugger)
-		{}
+		{
+			if (this.timer % 5 == 0)
+			{
+				this.tiltEncValueEntry.setDouble(hugger.getTravel());
+			}
+		}
 		
 		public void updateLift(Lift lift)
-		{}
+		{
+			if (this.timer % 5 == 0)
+			{
+				this.liftEncValueEntry.setDouble(lift.getTravel());
+			}
+		}
 	}
 
 	private static class MattDupuis
