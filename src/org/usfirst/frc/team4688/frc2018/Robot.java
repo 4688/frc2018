@@ -273,7 +273,7 @@ public class Robot extends IterativeRobot
 			}
 			else if (!up && dn)
 			{
-				return -0.65d;
+				return -0.5d;
 			}
 			else
 			{
@@ -464,7 +464,7 @@ public class Robot extends IterativeRobot
 		
 		public double getTravel()
 		{
-			return this.liftEnc.getDistance();
+			return -this.liftEnc.getDistance();
 		}
 	}
 	
