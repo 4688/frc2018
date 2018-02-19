@@ -4,6 +4,7 @@ package org.usfirst.frc.team4688.frc2018;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
+import com.kauailabs.navx.frc.*;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.*;
 
@@ -15,6 +16,7 @@ public class Robot extends IterativeRobot
 	private MattDupuis matt;
 	private DriveTrain driveTrain;
 	private Hugger hugger;
+	private Lift lift;
 	private Autonomous auto;
 	
 	public void robotInit()
@@ -23,6 +25,7 @@ public class Robot extends IterativeRobot
 		this.matt = new MattDupuis(JOYSTICK_USB);
 		this.driveTrain = new DriveTrain();
 		this.hugger = new Hugger();
+		this.lift = new Lift();
 		this.auto = new Autonomous();
 	}
 	
@@ -30,7 +33,17 @@ public class Robot extends IterativeRobot
 	{
 		this.dashboard.updateMatchInfo();
 		this.dashboard.updateRoutine(this.auto.getRoutine());
+		this.dashboard.updateDriveTrain(this.driveTrain);
+		this.dashboard.updateHugger(this.hugger);
+		this.dashboard.updateLift(this.lift);
 		this.dashboard.tick();
+		
+		if (RobotController.getUserButton())
+		{
+			this.driveTrain.zeroSensors();
+			this.hugger.zeroSensors();
+			this.lift.zeroSensors();
+		}
 	}
 	
 	public void disabledInit()
@@ -50,8 +63,9 @@ public class Robot extends IterativeRobot
 	
 	public void teleopPeriodic()
 	{
-		this.driveTrain.control(this.matt);
+		this.driveTrain.control(this.matt, this.lift.getTravel());
 		this.hugger.control(this.matt);
+		this.lift.control(this.matt);
 	}
 	
 	public void testInit()
@@ -68,6 +82,9 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry allianceEntry, stationEntry;
 		private NetworkTableEntry platesEntry;
 		private NetworkTableEntry routineEntry;
+		private NetworkTableEntry driveEncValueEntry, gyroValueEntry;
+		private NetworkTableEntry tiltEncValueEntry;
+		private NetworkTableEntry liftEncValueEntry;
 		private int timer;
 		
 		public Dashboard(String tableKey)
@@ -84,6 +101,10 @@ public class Robot extends IterativeRobot
 			this.stationEntry = this.table.getEntry("station");
 			this.platesEntry = this.table.getEntry("plates");
 			this.routineEntry = this.table.getEntry("routine");
+			this.driveEncValueEntry = this.table.getEntry("driveEncValue");
+			this.gyroValueEntry = this.table.getEntry("gyroValue");
+			this.tiltEncValueEntry = this.table.getEntry("tiltEncValue");
+			this.liftEncValueEntry = this.table.getEntry("liftEncValue");
 			
 			this.timer = 0;
 		}
@@ -162,6 +183,31 @@ public class Robot extends IterativeRobot
 				this.routineEntry.setNumber(routine);
 			}
 		}
+		
+		public void updateDriveTrain(DriveTrain driveTrain)
+		{
+			if (this.timer % 5 == 0)
+			{
+				this.driveEncValueEntry.setDouble(driveTrain.getRevs());
+				this.gyroValueEntry.setDouble(driveTrain.getAngle());
+			}
+		}
+		
+		public void updateHugger(Hugger hugger)
+		{
+			if (this.timer % 5 == 0)
+			{
+				this.tiltEncValueEntry.setDouble(hugger.getTravel());
+			}
+		}
+		
+		public void updateLift(Lift lift)
+		{
+			if (this.timer % 5 == 0)
+			{
+				this.liftEncValueEntry.setDouble(lift.getTravel());
+			}
+		}
 	}
 
 	private static class MattDupuis
@@ -192,8 +238,11 @@ public class Robot extends IterativeRobot
 		
 		public double getIntake()
 		{
-			double in = this.joystick.getRawButton(6) ? -1d : 0d;
-			double reverse = this.joystick.getRawButton(2) ? -1d : 1d;
+			boolean inBtn = this.joystick.getRawButton(6);
+			boolean reverseBtn = this.joystick.getRawButton(2);
+			double in = inBtn ? -0.8d : 0d;
+			double reverse = reverseBtn ? -1d : 1d;
+			if (!inBtn && reverseBtn) return 0.25d;
 			return in * reverse;
 		}
 		
@@ -213,6 +262,24 @@ public class Robot extends IterativeRobot
 				return 0d;
 			}
 		}
+		
+		public double getLift()
+		{
+			boolean up = this.joystick.getRawButton(4);
+			boolean dn = this.joystick.getRawButton(3);
+			if (up && !dn)
+			{
+				return 0.85d;
+			}
+			else if (!up && dn)
+			{
+				return -0.5d;
+			}
+			else
+			{
+				return 0d;
+			}
+		}
 	}
 	
 	private static class DriveTrain
@@ -220,6 +287,7 @@ public class Robot extends IterativeRobot
 		private static final double DRIVE_FACTOR = 0.5;
 		
 		private TalonSRX lfm, lrm, rfm, rrm;
+		private AHRS navx;
 		
 		public DriveTrain()
 		{
@@ -227,18 +295,20 @@ public class Robot extends IterativeRobot
 			this.lrm = new TalonSRX(3);
 			this.rfm = new TalonSRX(2);
 			this.rrm = new TalonSRX(4);
+			this.navx = new AHRS(SPI.Port.kMXP);
 			
 			this.lrm.follow(this.lfm);
 			this.rrm.follow(this.rfm);
 		}
 		
-		public void control(MattDupuis matt)
+		public void control(MattDupuis matt, double liftTravel)
 		{
 			double y = matt.getForward();
 			double x = matt.getTurn();
 			double l = 0d, r = 0d;
 			double d = DRIVE_FACTOR;
 			double t = matt.getTurbo();
+			double e = Math.min(1d / (1d + liftTravel / 4d), 1);
 			if (Math.abs(x) < 0.04)
 			{
 				l = y;
@@ -254,8 +324,8 @@ public class Robot extends IterativeRobot
 				l = x + y;
 				r = x - y;
 			}
-			this.setLSpd(l * d * t);
-			this.setRSpd(r * d * t);
+			this.setLSpd(l * d * t * e);
+			this.setRSpd(r * d * t * e);
 		}
 		
 		public void setLSpd(double spd)
@@ -281,13 +351,30 @@ public class Robot extends IterativeRobot
 				this.rfm.set(ControlMode.PercentOutput, 0d);
 			}
 		}
+		
+		public void zeroSensors()
+		{
+			this.lfm.getSensorCollection().setQuadraturePosition(0, 0);
+			this.navx.reset();
+		}
+		
+		public double getRevs()
+		{
+			return -this.lfm.getSensorCollection().getQuadraturePosition() / 4096d;
+		}
+		
+		public double getAngle()
+		{
+			return this.navx.getAngle();
+		}
 	}
 
 	private static class Hugger
 	{
-		TalonSRX intakeL, intakeR;
-		Spark tilt;
-		DigitalInput lowLim, highLim;
+		private TalonSRX intakeL, intakeR;
+		private Spark tilt;
+		private DigitalInput lowLim, highLim;
+		private Encoder tiltEnc;
 		
 		public Hugger()
 		{
@@ -296,6 +383,8 @@ public class Robot extends IterativeRobot
 			this.tilt = new Spark(0);
 			this.lowLim = new DigitalInput(0);
 			this.highLim = new DigitalInput(1);
+			this.tiltEnc = new Encoder(4, 5);
+			this.tiltEnc.setDistancePerPulse(1d / 2048d);
 		}
 		
 		public void control(MattDupuis matt)
@@ -314,6 +403,69 @@ public class Robot extends IterativeRobot
 				tilt = Math.max(tilt, 0);
 			}
 			this.tilt.set(tilt);
+		}
+		
+		public void zeroSensors()
+		{
+			this.tiltEnc.reset();
+		}
+		
+		public double getTravel()
+		{
+			return this.tiltEnc.getDistance();
+		}
+	}
+	
+	private static class Lift
+	{
+		DigitalInput lowLim, highLim;
+		Spark lifty;
+		Servo lock;
+		Encoder liftEnc;
+		
+		public Lift()
+		{
+			this.lowLim = new DigitalInput(2);
+			this.highLim = new DigitalInput(3);
+			this.lifty = new Spark(1);
+			this.lock = new Servo(2);
+			this.liftEnc = new Encoder(6, 7);
+			this.liftEnc.setDistancePerPulse(1d / 2048d);
+		}
+		
+		public void control(MattDupuis matt)
+		{
+			double lift = matt.getLift();
+			if ((lift < -0.04 && this.lowLim.get()) || (lift > 0.04 && this.highLim.get()))
+			{
+				this.disengageLock();
+				this.lifty.set(lift);
+			}
+			else
+			{
+				this.engageLock();
+				this.lifty.set(0d);
+			}
+		}
+		
+		private void engageLock()
+		{
+			this.lock.set(0.6d);
+		}
+		
+		private void disengageLock()
+		{
+			this.lock.set(1d);
+		}
+		
+		public void zeroSensors()
+		{
+			this.liftEnc.reset();
+		}
+		
+		public double getTravel()
+		{
+			return -this.liftEnc.getDistance();
 		}
 	}
 	
