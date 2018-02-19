@@ -308,7 +308,7 @@ public class Robot extends IterativeRobot
 			double l = 0d, r = 0d;
 			double d = DRIVE_FACTOR;
 			double t = matt.getTurbo();
-			double e = 1d / (1 + liftTravel / 8);
+			double e = Math.min(1d / (1d + liftTravel / 4d), 1);
 			if (Math.abs(x) < 0.04)
 			{
 				l = y;
