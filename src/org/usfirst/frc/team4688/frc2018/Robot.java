@@ -370,10 +370,10 @@ public class Robot extends IterativeRobot
 
 	private static class Hugger
 	{
-		TalonSRX intakeL, intakeR;
-		Spark tilt;
-		DigitalInput lowLim, highLim;
-		Encoder tiltEnc;
+		private TalonSRX intakeL, intakeR;
+		private Spark tilt;
+		private DigitalInput lowLim, highLim;
+		private Encoder tiltEnc;
 		
 		public Hugger()
 		{
