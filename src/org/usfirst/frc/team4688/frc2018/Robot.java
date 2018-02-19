@@ -63,7 +63,7 @@ public class Robot extends IterativeRobot
 	
 	public void teleopPeriodic()
 	{
-		this.driveTrain.control(this.matt);
+		this.driveTrain.control(this.matt, this.lift.getTravel());
 		this.hugger.control(this.matt);
 		this.lift.control(this.matt);
 	}
@@ -301,13 +301,14 @@ public class Robot extends IterativeRobot
 			this.rrm.follow(this.rfm);
 		}
 		
-		public void control(MattDupuis matt)
+		public void control(MattDupuis matt, double liftTravel)
 		{
 			double y = matt.getForward();
 			double x = matt.getTurn();
 			double l = 0d, r = 0d;
 			double d = DRIVE_FACTOR;
 			double t = matt.getTurbo();
+			double e = 1d / (1 + liftTravel / 8);
 			if (Math.abs(x) < 0.04)
 			{
 				l = y;
@@ -323,8 +324,8 @@ public class Robot extends IterativeRobot
 				l = x + y;
 				r = x - y;
 			}
-			this.setLSpd(l * d * t);
-			this.setRSpd(r * d * t);
+			this.setLSpd(l * d * t * e);
+			this.setRSpd(r * d * t * e);
 		}
 		
 		public void setLSpd(double spd)
