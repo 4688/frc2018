@@ -85,6 +85,7 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry driveEncValueEntry, gyroValueEntry;
 		private NetworkTableEntry tiltEncValueEntry;
 		private NetworkTableEntry liftEncValueEntry;
+		private CameraServer camera;
 		private int timer;
 		
 		public Dashboard(String tableKey)
@@ -105,6 +106,7 @@ public class Robot extends IterativeRobot
 			this.gyroValueEntry = this.table.getEntry("gyroValue");
 			this.tiltEncValueEntry = this.table.getEntry("tiltEncValue");
 			this.liftEncValueEntry = this.table.getEntry("liftEncValue");
+			this.camera = CameraServer.getInstance();
 			
 			this.timer = 0;
 		}
@@ -112,6 +114,11 @@ public class Robot extends IterativeRobot
 		public void tick()
 		{
 			this.timer += 1;
+		}
+		
+		public void initCamera()
+		{
+			this.camera.startAutomaticCapture();
 		}
 		
 		public void updateMatchInfo()
