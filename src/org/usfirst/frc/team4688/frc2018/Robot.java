@@ -308,7 +308,7 @@ public class Robot extends IterativeRobot
 			double l = 0d, r = 0d;
 			double d = DRIVE_FACTOR;
 			double t = matt.getTurbo();
-			double e = Math.min(1d / (1d + liftTravel / 4d), 1);
+			double e = Math.min(1d / (1d + liftTravel / 4d), 1d);
 			if (Math.abs(x) < 0.04)
 			{
 				l = y;
@@ -326,6 +326,7 @@ public class Robot extends IterativeRobot
 			}
 			this.setLSpd(l * d * t * e);
 			this.setRSpd(r * d * t * e);
+			System.out.println(e + "\t\t\t" + y + "\t\t\t" + x);
 		}
 		
 		public void setLSpd(double spd)
@@ -418,10 +419,11 @@ public class Robot extends IterativeRobot
 	
 	private static class Lift
 	{
-		DigitalInput lowLim, highLim;
-		Spark lifty;
-		Servo lock;
-		Encoder liftEnc;
+		private DigitalInput lowLim, highLim;
+		private Spark lifty;
+		private Servo lock;
+		private Encoder liftEnc;
+		
 		
 		public Lift()
 		{
