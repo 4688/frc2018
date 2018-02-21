@@ -59,6 +59,16 @@ public class Robot extends IterativeRobot
 		this.dashboard.updateMode("Auto");
 	}
 	
+	public void autonomousPeriodic()
+	{
+		int r = this.auto.getRoutine();
+		if ((8 <= r && r < 12) || (16 <= r && r < 20))
+		{
+			this.driveTrain.turnTo(0);
+			this.driveTrain.drive(0d);
+		}
+	}
+	
 	public void teleopInit()
 	{
 		this.dashboard.updateMode("Teleop");
@@ -315,6 +325,8 @@ public class Robot extends IterativeRobot
 		
 		private TalonSRX lfm, lrm, rfm, rrm;
 		private AHRS navx;
+		private PIDLoop drivePID, gyroPID;
+		private double driveGain, gyroGain;
 		
 		public DriveTrain()
 		{
@@ -323,6 +335,11 @@ public class Robot extends IterativeRobot
 			this.rfm = new TalonSRX(2);
 			this.rrm = new TalonSRX(4);
 			this.navx = new AHRS(SPI.Port.kMXP);
+			
+			this.drivePID = new PIDLoop(1d, 0d, 0d);
+			this.gyroPID = new PIDLoop(-0.03d, 0d, 0d);
+			this.driveGain = 0d;
+			this.gyroGain = 0d;
 			
 			this.lrm.follow(this.lfm);
 			this.rrm.follow(this.rfm);
@@ -353,6 +370,26 @@ public class Robot extends IterativeRobot
 			}
 			this.setLSpd(l * d * t * e);
 			this.setRSpd(r * d * t * e);
+		}
+		
+		public void driveTo(double s)
+		{
+			double x = this.getRevs() * 6d;
+			this.drivePID.update(x, s);
+			this.driveGain = this.drivePID.get();
+		}
+		
+		public void turnTo(double s)
+		{
+			double x = this.getAngle();
+			this.gyroPID.update(x, s);
+			this.gyroGain = this.drivePID.get();
+		}
+		
+		public void drive(double f)
+		{
+			this.setLSpd(f + driveGain + gyroGain);
+			this.setRSpd(f);
 		}
 		
 		public void setLSpd(double spd)
