@@ -280,6 +280,18 @@ public class Robot extends IterativeRobot
 				return 0d;
 			}
 		}
+		
+		public boolean getDeploy()
+		{
+			return this.joystick.getRawButton(1);
+		}
+		
+		public double getClimb()
+		{
+			boolean pressed1 = this.joystick.getRawButton(7);
+			boolean pressed2 = this.joystick.getRawButton(8);
+			return pressed1 && pressed2 ? 1d : 0d;
+		}
 	}
 	
 	private static class DriveTrain
@@ -477,6 +489,42 @@ public class Robot extends IterativeRobot
 		public double getTravel()
 		{
 			return -this.liftEnc.getDistance();
+		}
+	}
+	
+	private static class Climber
+	{
+		private VictorSPX reacher;
+		private int deployed;
+		private boolean activated;
+		
+		public Climber()
+		{
+			this.reacher = new VictorSPX(7);
+			this.deployed = 0;
+			this.activated = false;
+		}
+		
+		public void control(MattDupuis matt)
+		{
+			double climb = matt.getClimb();
+			if (matt.getDeploy())
+			{
+				this.deployed = 50;
+			}
+			if (this.deployed > 0 && !this.activated)
+			{
+				this.reacher.set(ControlMode.PercentOutput, 1d);
+				this.deployed -= 1;
+				if (this.deployed <= 0)
+				{
+					this.activated = true;
+				}
+			}
+			if (this.activated)
+			{
+				this.reacher.set(ControlMode.PercentOutput, climb);
+			}
 		}
 	}
 	
