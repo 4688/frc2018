@@ -15,6 +15,8 @@ public class Robot extends IterativeRobot
 	private MattDupuis matt;
 	private DriveTrain driveTrain;
 	private Hugger hugger;
+	private Lift lift;
+	private Climber climber;
 	private Autonomous auto;
 	
 	public void robotInit()
@@ -23,6 +25,8 @@ public class Robot extends IterativeRobot
 		this.matt = new MattDupuis(JOYSTICK_USB);
 		this.driveTrain = new DriveTrain();
 		this.hugger = new Hugger();
+		this.lift = new Lift();
+		this.climber = new Climber();
 		this.auto = new Autonomous();
 	}
 	
@@ -52,6 +56,12 @@ public class Robot extends IterativeRobot
 	{
 		this.driveTrain.control(this.matt);
 		this.hugger.control(this.matt);
+		this.lift.control(this.matt);
+		
+		if (DriverStation.getInstance().getMatchTime() <= 30d)
+		{
+			this.climber.control(this.matt);
+		}
 	}
 	
 	public void testInit()
@@ -68,6 +78,11 @@ public class Robot extends IterativeRobot
 		private NetworkTableEntry allianceEntry, stationEntry;
 		private NetworkTableEntry platesEntry;
 		private NetworkTableEntry routineEntry;
+		private NetworkTableEntry driveEncValueEntry, gyroValueEntry;
+		private NetworkTableEntry tiltEncValueEntry;
+		private NetworkTableEntry liftEncValueEntry;
+		private CameraServer camera;
+    
 		private int timer;
 		
 		public Dashboard(String tableKey)
@@ -84,6 +99,11 @@ public class Robot extends IterativeRobot
 			this.stationEntry = this.table.getEntry("station");
 			this.platesEntry = this.table.getEntry("plates");
 			this.routineEntry = this.table.getEntry("routine");
+			this.driveEncValueEntry = this.table.getEntry("driveEncValue");
+			this.gyroValueEntry = this.table.getEntry("gyroValue");
+			this.tiltEncValueEntry = this.table.getEntry("tiltEncValue");
+			this.liftEncValueEntry = this.table.getEntry("liftEncValue");
+			this.camera = CameraServer.getInstance();
 			
 			this.timer = 0;
 		}
@@ -91,6 +111,11 @@ public class Robot extends IterativeRobot
 		public void tick()
 		{
 			this.timer += 1;
+		}
+		
+		public void initCamera()
+		{
+			this.camera.startAutomaticCapture();
 		}
 		
 		public void updateMatchInfo()
@@ -213,6 +238,36 @@ public class Robot extends IterativeRobot
 				return 0d;
 			}
 		}
+		
+		public double getLift()
+		{
+			boolean up = this.joystick.getRawButton(4);
+			boolean dn = this.joystick.getRawButton(3);
+			if (up && !dn)
+			{
+				return 0.9d;
+			}
+			else if (!up && dn)
+			{
+				return -0.6d;
+			}
+			else
+			{
+				return 0d;
+			}
+		}
+		
+		public boolean getDeploy()
+		{
+			boolean pressed1 = this.joystick.getRawButton(7);
+			boolean pressed2 = this.joystick.getRawButton(8);
+			return pressed1 && pressed2;
+		}
+		
+		public double getClimb()
+		{
+			return this.joystick.getRawButton(1) ? -1d : 0d;
+		}
 	}
 	
 	private static class DriveTrain
@@ -239,6 +294,7 @@ public class Robot extends IterativeRobot
 			double l = 0d, r = 0d;
 			double d = DRIVE_FACTOR;
 			double t = matt.getTurbo();
+			double e = Math.min(1d / (1d + liftTravel / 4d), 1d);
 			if (Math.abs(x) < 0.04)
 			{
 				l = y;
@@ -314,6 +370,105 @@ public class Robot extends IterativeRobot
 				tilt = Math.max(tilt, 0);
 			}
 			this.tilt.set(tilt);
+		}
+		
+		public void zeroSensors()
+		{
+			this.tiltEnc.reset();
+		}
+		
+		public double getTravel()
+		{
+			return this.tiltEnc.getDistance();
+		}
+	}
+	
+	private static class Lift
+	{
+		private DigitalInput lowLim, highLim;
+		private Spark lifty;
+		private Servo lock;
+		private Encoder liftEnc;
+		
+		public Lift()
+		{
+			this.lowLim = new DigitalInput(2);
+			this.highLim = new DigitalInput(3);
+			this.lifty = new Spark(1);
+			this.lock = new Servo(2);
+			this.liftEnc = new Encoder(6, 7);
+			this.liftEnc.setDistancePerPulse(1d / 2048d);
+		}
+		
+		public void control(MattDupuis matt)
+		{
+			double lift = matt.getLift();
+			if ((lift < -0.04 && this.lowLim.get()) || (lift > 0.04 && this.highLim.get()))
+			{
+				this.disengageLock();
+				this.lifty.set(lift);
+			}
+			else
+			{
+				this.engageLock();
+				this.lifty.set(0d);
+			}
+		}
+		
+		private void engageLock()
+		{
+			this.lock.set(0.6d);
+		}
+		
+		private void disengageLock()
+		{
+			this.lock.set(1d);
+		}
+		
+		public void zeroSensors()
+		{
+			this.liftEnc.reset();
+		}
+		
+		public double getTravel()
+		{
+			return -this.liftEnc.getDistance();
+		}
+	}
+	
+	private static class Climber
+	{
+		private VictorSPX reacher;
+		private int deployed;
+		private boolean activated;
+		
+		public Climber()
+		{
+			this.reacher = new VictorSPX(7);
+			this.deployed = 0;
+			this.activated = false;
+		}
+		
+		public void control(MattDupuis matt)
+		{
+			double climb = matt.getClimb();
+			if (matt.getDeploy())
+			{
+				this.deployed = 30;
+			}
+			if (this.deployed > 0 && !this.activated)
+			{
+				this.reacher.set(ControlMode.PercentOutput, -1d);
+				this.deployed -= 1;
+				if (this.deployed <= 0)
+				{
+					this.activated = true;
+				}
+			}
+			if (this.activated)
+			{
+				this.reacher.set(ControlMode.PercentOutput, climb);
+			}
 		}
 	}
 	
