@@ -269,11 +269,11 @@ public class Robot extends IterativeRobot
 			boolean dn = this.joystick.getRawButton(3);
 			if (up && !dn)
 			{
-				return 0.85d;
+				return 0.9d;
 			}
 			else if (!up && dn)
 			{
-				return -0.5d;
+				return -0.6d;
 			}
 			else
 			{
@@ -423,7 +423,7 @@ public class Robot extends IterativeRobot
 		private Spark lifty;
 		private Servo lock;
 		private Encoder liftEnc;
-		
+		private int unlockTimer;
 		
 		public Lift()
 		{
@@ -433,6 +433,7 @@ public class Robot extends IterativeRobot
 			this.lock = new Servo(2);
 			this.liftEnc = new Encoder(6, 7);
 			this.liftEnc.setDistancePerPulse(1d / 2048d);
+			this.unlockTimer = 0;
 		}
 		
 		public void control(MattDupuis matt)
@@ -441,13 +442,21 @@ public class Robot extends IterativeRobot
 			if ((lift < -0.04 && this.lowLim.get()) || (lift > 0.04 && this.highLim.get()))
 			{
 				this.disengageLock();
-				this.lifty.set(lift);
+				if (lift < 0)
+				{
+					this.unlockTimer = 20;
+				}
+				if (this.unlockTimer <= 0)
+				{
+					this.lifty.set(lift);
+				}
 			}
 			else
 			{
 				this.engageLock();
 				this.lifty.set(0d);
 			}
+			this.unlockTimer = Math.max(this.unlockTimer - 1, 0);
 		}
 		
 		private void engageLock()
