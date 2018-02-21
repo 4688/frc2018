@@ -554,4 +554,34 @@ public class Robot extends IterativeRobot
 			return n1 + n2 + n4 + n8 + n16;
 		}
 	}
+	
+	private static class PIDLoop
+	{
+		private double p, i, d;
+		private double kP, kI, kD, err;
+		
+		public PIDLoop(double kP, double kI, double kD)
+		{
+			this.p = 0d;
+			this.i = 0d;
+			this.d = 0d;
+			this.kP = kP;
+			this.kI = kI;
+			this.kD = kD;
+			this.err = 0d;
+		}
+		
+		public void update(double x, double s)
+		{
+			this.p = s - x;
+			this.i += (s - x) / 50d;
+			this.d = ((s - x) - this.err) * 50d;
+			this.err = s - x;
+		}
+		
+		public double get()
+		{
+			return this.kP * this.p + this.kI * this.i + this.kD * this.d;
+		}
+	}
 }
