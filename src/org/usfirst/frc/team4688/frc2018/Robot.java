@@ -29,6 +29,7 @@ public class Robot extends IterativeRobot
 		this.lift = new Lift();
 		this.climber = new Climber();
 		this.auto = new Autonomous();
+		this.dashboard.initCamera();
 	}
 	
 	public void robotPeriodic()
