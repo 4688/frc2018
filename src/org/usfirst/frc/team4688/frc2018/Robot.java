@@ -17,6 +17,7 @@ public class Robot extends IterativeRobot
 	private DriveTrain driveTrain;
 	private Hugger hugger;
 	private Lift lift;
+	private Climber climber;
 	private Autonomous auto;
 	
 	public void robotInit()
@@ -26,6 +27,7 @@ public class Robot extends IterativeRobot
 		this.driveTrain = new DriveTrain();
 		this.hugger = new Hugger();
 		this.lift = new Lift();
+		this.climber = new Climber();
 		this.auto = new Autonomous();
 	}
 	
@@ -66,6 +68,11 @@ public class Robot extends IterativeRobot
 		this.driveTrain.control(this.matt, this.lift.getTravel());
 		this.hugger.control(this.matt);
 		this.lift.control(this.matt);
+		
+		if (DriverStation.getInstance().getMatchTime() <= 30d)
+		{
+			this.climber.control(this.matt);
+		}
 	}
 	
 	public void testInit()
@@ -290,14 +297,14 @@ public class Robot extends IterativeRobot
 		
 		public boolean getDeploy()
 		{
-			return this.joystick.getRawButton(1);
+			boolean pressed1 = this.joystick.getRawButton(7);
+			boolean pressed2 = this.joystick.getRawButton(8);
+			return pressed1 && pressed2;
 		}
 		
 		public double getClimb()
 		{
-			boolean pressed1 = this.joystick.getRawButton(7);
-			boolean pressed2 = this.joystick.getRawButton(8);
-			return pressed1 && pressed2 ? 1d : 0d;
+			return this.joystick.getRawButton(1) ? -1d : 0d;
 		}
 	}
 	
@@ -345,7 +352,6 @@ public class Robot extends IterativeRobot
 			}
 			this.setLSpd(l * d * t * e);
 			this.setRSpd(r * d * t * e);
-			System.out.println(e + "\t\t\t" + y + "\t\t\t" + x);
 		}
 		
 		public void setLSpd(double spd)
@@ -442,7 +448,6 @@ public class Robot extends IterativeRobot
 		private Spark lifty;
 		private Servo lock;
 		private Encoder liftEnc;
-		private int unlockTimer;
 		
 		public Lift()
 		{
@@ -452,7 +457,6 @@ public class Robot extends IterativeRobot
 			this.lock = new Servo(2);
 			this.liftEnc = new Encoder(6, 7);
 			this.liftEnc.setDistancePerPulse(1d / 2048d);
-			this.unlockTimer = 0;
 		}
 		
 		public void control(MattDupuis matt)
@@ -461,21 +465,13 @@ public class Robot extends IterativeRobot
 			if ((lift < -0.04 && this.lowLim.get()) || (lift > 0.04 && this.highLim.get()))
 			{
 				this.disengageLock();
-				if (lift < 0)
-				{
-					this.unlockTimer = 20;
-				}
-				if (this.unlockTimer <= 0)
-				{
-					this.lifty.set(lift);
-				}
+				this.lifty.set(lift);
 			}
 			else
 			{
 				this.engageLock();
 				this.lifty.set(0d);
 			}
-			this.unlockTimer = Math.max(this.unlockTimer - 1, 0);
 		}
 		
 		private void engageLock()
@@ -517,11 +513,11 @@ public class Robot extends IterativeRobot
 			double climb = matt.getClimb();
 			if (matt.getDeploy())
 			{
-				this.deployed = 50;
+				this.deployed = 30;
 			}
 			if (this.deployed > 0 && !this.activated)
 			{
-				this.reacher.set(ControlMode.PercentOutput, 1d);
+				this.reacher.set(ControlMode.PercentOutput, -1d);
 				this.deployed -= 1;
 				if (this.deployed <= 0)
 				{
