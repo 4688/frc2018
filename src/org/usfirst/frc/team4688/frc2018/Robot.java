@@ -64,8 +64,9 @@ public class Robot extends IterativeRobot
 		int r = this.auto.getRoutine();
 		if ((8 <= r && r < 12) || (16 <= r && r < 20))
 		{
+			this.driveTrain.driveTo(0);
 			this.driveTrain.turnTo(0);
-			this.driveTrain.drive(0d);
+			this.driveTrain.drive(0);
 		}
 	}
 	
@@ -336,8 +337,8 @@ public class Robot extends IterativeRobot
 			this.rrm = new TalonSRX(4);
 			this.navx = new AHRS(SPI.Port.kMXP);
 			
-			this.drivePID = new PIDLoop(1d, 0d, 0d);
-			this.gyroPID = new PIDLoop(-0.03d, 0d, 0d);
+			this.drivePID = new PIDLoop(0.03d, 0d, 0d);
+			this.gyroPID = new PIDLoop(0.03d, 0d, 0d);
 			this.driveGain = 0d;
 			this.gyroGain = 0d;
 			
@@ -374,7 +375,7 @@ public class Robot extends IterativeRobot
 		
 		public void driveTo(double s)
 		{
-			double x = this.getRevs() * 6d;
+			double x = this.getRevs() * 6d * Math.PI;
 			this.drivePID.update(x, s);
 			this.driveGain = this.drivePID.get();
 		}
@@ -383,13 +384,13 @@ public class Robot extends IterativeRobot
 		{
 			double x = this.getAngle();
 			this.gyroPID.update(x, s);
-			this.gyroGain = this.drivePID.get();
+			this.gyroGain = this.gyroPID.get();
 		}
 		
 		public void drive(double f)
 		{
-			this.setLSpd(f + driveGain + gyroGain);
-			this.setRSpd(f);
+			this.setLSpd(f + this.driveGain + this.gyroGain);
+			this.setRSpd(-f - this.driveGain);
 		}
 		
 		public void setLSpd(double spd)
