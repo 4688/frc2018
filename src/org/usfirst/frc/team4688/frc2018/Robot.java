@@ -16,10 +16,53 @@ public class Robot extends IterativeRobot
 	private Dashboard dashboard;
 	
 	/**
-	 * This method is called once each time the robot starts up.
+	 * This method is called once each time the robot starts up. Here it
+	 * initializes each of the individual components.
 	 */
 	public void robotInit()
 	{
 		this.dashboard = new Dashboard("SaintsBotDS");
+	}
+	
+	/**
+	 * This method is called 50 times per second while the robot is on,
+	 * regardless of operating mode.
+	 */
+	public void robotPeriodic()
+	{
+		// Continuously update match/robot info
+		this.dashboard.updateMatch();
+	}
+	
+	/**
+	 * This method is called once each time the robot enters a disabled state.
+	 */
+	public void disabledInit()
+	{
+		this.dashboard.updateMode(Dashboard.Mode.Disabled);
+	}
+	
+	/**
+	 * This method is called once each time the robot enters Teleop mode.
+	 */
+	public void teleopInit()
+	{
+		this.dashboard.updateMode(Dashboard.Mode.Teleop);
+	}
+	
+	/**
+	 * This method is called once each time the robot enters Autonomous mode.
+	 */
+	public void autonomousInit()
+	{
+		this.dashboard.updateMode(Dashboard.Mode.Auto);
+	}
+	
+	/**
+	 * This method is called once each time the robot enters Test mode.
+	 */
+	public void testInit()
+	{
+		this.dashboard.updateMode(Dashboard.Mode.Test);
 	}
 }

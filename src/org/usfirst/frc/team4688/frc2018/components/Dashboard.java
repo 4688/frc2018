@@ -149,4 +149,37 @@ public class Dashboard
 			this.platesEntry.setString(plates);
 		}
 	}
+	
+	/**
+	 * Enumeration of possible match modes.
+	 */
+	public static enum Mode
+	{
+		Disabled, Teleop, Auto, Test
+	}
+	
+	/**
+	 * Updates the current operating mode on the dashboard. Should be called
+	 * whenever the mode changes on the robot.
+	 * 
+	 * @param mode New operating mode
+	 */
+	public void updateMode(Mode mode)
+	{
+		switch (mode)
+		{
+			case Disabled:
+				this.modeEntry.setString("Disabled");
+				break;
+			case Teleop:
+				this.modeEntry.setString("Teleop");
+				break;
+			case Auto:
+				this.modeEntry.setString("Auto");
+				break;
+			case Test:
+				this.modeEntry.setString("Test");
+				break;
+		}
+	}
 }
