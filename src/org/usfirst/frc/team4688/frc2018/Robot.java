@@ -16,6 +16,7 @@ public class Robot extends IterativeRobot
 	private Dashboard dashboard;
 	private MattDupuis matt;
 	private DriveTrain drive;
+	private Hugger hugger;
 	
 	/**
 	 * This method is called once each time the robot starts up. Here it
@@ -26,6 +27,7 @@ public class Robot extends IterativeRobot
 		this.dashboard = new Dashboard("SaintsBotDS");
 		this.matt = new MattDupuis();
 		this.drive = new DriveTrain();
+		this.hugger = new Hugger();
 	}
 	
 	/**
@@ -40,6 +42,7 @@ public class Robot extends IterativeRobot
 		// Continuously update component info
 		this.dashboard.updateMatt(this.matt);
 		this.dashboard.updateDrive(this.drive);
+		this.dashboard.updateHugger(this.hugger);
 	}
 	
 	/**
@@ -56,6 +59,17 @@ public class Robot extends IterativeRobot
 	public void teleopInit()
 	{
 		this.dashboard.updateMode(Dashboard.Mode.Teleop);
+	}
+	
+	/**
+	 * This method is called 50 times per second while the robot is in Teleop
+	 * mode.
+	 */
+	public void teleopPeriodic()
+	{
+		// Control components
+		this.drive.control(this.matt);
+		this.hugger.control(this.matt);
 	}
 	
 	/**
