@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.*;
 /**
  * Reads and processes input from the robot driver (after whom this class is
  * honourably named) through both the main Xbox controller and the button board.
+ * 
+ * @author Jacob
  */
 public class MattDupuis
 {
