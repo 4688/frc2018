@@ -17,12 +17,15 @@ public class DriveTrain
 	// Base drive speed (calculated speeds are multiplied by this value)
 	private final double BASE_SPD = 0.5d;
 	
-	// Max turbo multiplier
-	private final double TURBO_FACTOR = 1.5d;
-	
 	// Drive motor % deadband (speeds lower than this do not draw enough voltage
 	// to actually make the motors move)
 	private final double DEADBAND = 0.04d;
+	
+	// Wheel diameter, in inches
+	private final double WHEEL_DIAMETER = 6d;
+	
+	// Max turbo multiplier
+	private final double TURBO_FACTOR = 1.5d;
 	
 	// Drive motor CAN indices
 	private final int LFM_CAN = 1;
@@ -35,6 +38,9 @@ public class DriveTrain
 	
 	// NavX
 	private AHRS navx;
+	
+	// Set initial left/right speeds (for sending to dashboard)
+	private double leftSpd, rightSpd;
 	
 	/**
 	 * Constructor.
@@ -53,6 +59,10 @@ public class DriveTrain
 		
 		// Initialize NavX
 		this.navx = new AHRS(SPI.Port.kMXP);
+		
+		// Set initial left/right speeds
+		this.leftSpd = 0d;
+		this.rightSpd = 0d;
 	}
 	
 	/**
@@ -78,6 +88,9 @@ public class DriveTrain
 		{
 			this.lfm.set(ControlMode.PercentOutput, 0d);
 		}
+		
+		// Store value to send to dashboard
+		this.leftSpd = spd;
 	}
 	
 	/**
@@ -103,6 +116,29 @@ public class DriveTrain
 		{
 			this.rfm.set(ControlMode.PercentOutput, 0d);
 		}
+		
+		// Store value to send to dashboard
+		this.rightSpd = spd;
+	}
+	
+	/**
+	 * Gets the previous set left drive speed.
+	 * 
+	 * @return Previous left drive speed
+	 */
+	public double getLSpd()
+	{
+		return this.leftSpd;
+	}
+	
+	/**
+	 * Gets the previous set right drive speed.
+	 * 
+	 * @return Previous right drive speed
+	 */
+	public double getRSpd()
+	{
+		return this.rightSpd;
 	}
 	
 	/**
@@ -142,5 +178,25 @@ public class DriveTrain
 		// Set motor speeds
 		this.setLSpd(BASE_SPD * l * turbo);
 		this.setRSpd(BASE_SPD * r * turbo);
+	}
+	
+	/**
+	 * Calculates the displacement traveled by the left drive motors based on
+	 * the encoder value and wheel diameter.
+	 * 
+	 * @return The distance traveled, in inches
+	 */
+	public double getDistance()
+	{
+		double enc = this.lfm.getSensorCollection().getQuadraturePosition();
+		return WHEEL_DIAMETER * Math.PI * (-enc / 4096d);
+	}
+	
+	/**
+	 * @return Current heading as reported by the NavX gyro
+	 */
+	public double getHeading()
+	{
+		return this.navx.getAngle();
 	}
 }

@@ -36,6 +36,10 @@ public class Dashboard
 	private NetworkTableEntry forwardEntry, turnEntry;
 	private NetworkTableEntry turboEntry;
 	
+	// Drive train entries
+	private NetworkTableEntry leftSpdEntry, rightSpdEntry;
+	private NetworkTableEntry distanceEntry, headingEntry;
+	
 	// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
@@ -70,6 +74,12 @@ public class Dashboard
 		this.forwardEntry = this.table.getEntry("forward");
 		this.turnEntry = this.table.getEntry("turn");
 		this.turboEntry = this.table.getEntry("turbo");
+		
+		// Drive train entries
+		this.leftSpdEntry = this.table.getEntry("leftSpd");
+		this.rightSpdEntry = this.table.getEntry("rightSpd");
+		this.distanceEntry = this.table.getEntry("distance");
+		this.headingEntry = this.table.getEntry("heading");
 		
 		// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
@@ -210,5 +220,27 @@ public class Dashboard
 		// Update turbo
 		double turbo = matt.getTurbo();
 		this.turboEntry.setDouble(turbo);
+	}
+	
+	/**
+	 * Sends drive speeds and sensors to the dashboard.
+	 * 
+	 * @param drive The Drive Train object
+	 */
+	public void updateDrive(DriveTrain drive)
+	{
+		// Update drive speeds
+		double l = drive.getLSpd();
+		double r = drive.getRSpd();
+		this.leftSpdEntry.setDouble(l);
+		this.rightSpdEntry.setDouble(r);
+		
+		// Update distance
+		double distance = drive.getDistance();
+		this.distanceEntry.setDouble(distance);
+		
+		// Update heading
+		double heading = drive.getHeading();
+		this.headingEntry.setDouble(heading);
 	}
 }

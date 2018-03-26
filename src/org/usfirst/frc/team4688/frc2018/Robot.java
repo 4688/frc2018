@@ -15,6 +15,7 @@ public class Robot extends IterativeRobot
 	// Components
 	private Dashboard dashboard;
 	private MattDupuis matt;
+	private DriveTrain drive;
 	
 	/**
 	 * This method is called once each time the robot starts up. Here it
@@ -24,6 +25,7 @@ public class Robot extends IterativeRobot
 	{
 		this.dashboard = new Dashboard("SaintsBotDS");
 		this.matt = new MattDupuis();
+		this.drive = new DriveTrain();
 	}
 	
 	/**
@@ -37,6 +39,7 @@ public class Robot extends IterativeRobot
 		
 		// Continuously update component info
 		this.dashboard.updateMatt(this.matt);
+		this.dashboard.updateDrive(this.drive);
 	}
 	
 	/**
