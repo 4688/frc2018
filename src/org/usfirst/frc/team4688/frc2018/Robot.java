@@ -29,6 +29,7 @@ public class Robot extends IterativeRobot
 		this.lift = new Lift();
 		this.climber = new Climber();
 		this.auto = new Autonomous();
+		this.dashboard.initCamera();
 	}
 	
 	public void robotPeriodic()
@@ -56,6 +57,17 @@ public class Robot extends IterativeRobot
 	public void autonomousInit()
 	{
 		this.dashboard.updateMode("Auto");
+	}
+	
+	public void autonomousPeriodic()
+	{
+		int r = this.auto.getRoutine();
+		if ((8 <= r && r < 12) || (16 <= r && r < 20))
+		{
+			this.driveTrain.driveTo(0);
+			this.driveTrain.turnTo(0);
+			this.driveTrain.drive(0);
+		}
 	}
 	
 	public void teleopInit()
@@ -314,6 +326,8 @@ public class Robot extends IterativeRobot
 		
 		private TalonSRX lfm, lrm, rfm, rrm;
 		private AHRS navx;
+		private PIDLoop drivePID, gyroPID;
+		private double driveGain, gyroGain;
 		
 		public DriveTrain()
 		{
@@ -322,6 +336,11 @@ public class Robot extends IterativeRobot
 			this.rfm = new TalonSRX(2);
 			this.rrm = new TalonSRX(4);
 			this.navx = new AHRS(SPI.Port.kMXP);
+			
+			this.drivePID = new PIDLoop(0.03d, 0d, 0d);
+			this.gyroPID = new PIDLoop(0.03d, 0d, 0d);
+			this.driveGain = 0d;
+			this.gyroGain = 0d;
 			
 			this.lrm.follow(this.lfm);
 			this.rrm.follow(this.rfm);
@@ -352,6 +371,26 @@ public class Robot extends IterativeRobot
 			}
 			this.setLSpd(l * d * t * e);
 			this.setRSpd(r * d * t * e);
+		}
+		
+		public void driveTo(double s)
+		{
+			double x = this.getRevs() * 6d * Math.PI;
+			this.drivePID.update(x, s);
+			this.driveGain = this.drivePID.get();
+		}
+		
+		public void turnTo(double s)
+		{
+			double x = this.getAngle();
+			this.gyroPID.update(x, s);
+			this.gyroGain = this.gyroPID.get();
+		}
+		
+		public void drive(double f)
+		{
+			this.setLSpd(f + this.driveGain + this.gyroGain);
+			this.setRSpd(-f - this.driveGain);
 		}
 		
 		public void setLSpd(double spd)
@@ -552,6 +591,36 @@ public class Robot extends IterativeRobot
 			int n8 = (this.a8.get() ? 0 : 1) << 3;
 			int n16 = (this.a16.get() ? 0 : 1) << 4;
 			return n1 + n2 + n4 + n8 + n16;
+		}
+	}
+	
+	private static class PIDLoop
+	{
+		private double p, i, d;
+		private double kP, kI, kD, err;
+		
+		public PIDLoop(double kP, double kI, double kD)
+		{
+			this.p = 0d;
+			this.i = 0d;
+			this.d = 0d;
+			this.kP = kP;
+			this.kI = kI;
+			this.kD = kD;
+			this.err = 0d;
+		}
+		
+		public void update(double x, double s)
+		{
+			this.p = s - x;
+			this.i += (s - x) / 50d;
+			this.d = ((s - x) - this.err) * 50d;
+			this.err = s - x;
+		}
+		
+		public double get()
+		{
+			return this.kP * this.p + this.kI * this.i + this.kD * this.d;
 		}
 	}
 }
