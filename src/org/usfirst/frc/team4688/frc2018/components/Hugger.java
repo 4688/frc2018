@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj.*;
  */
 public class Hugger
 {
+	// Intake/eject speed factor
+	private final double BASE_INTAKE_SPD = 1d;
+	
 	// Upwards tilt speed
 	private final double TILT_UP_SPD = -1d;
 	
@@ -48,6 +51,9 @@ public class Hugger
 	// Tilt motor encoder
 	private Encoder tiltEnc;
 	
+	// Current tilt speed
+	private double tiltSpd;
+	
 	/**
 	 * Constructor.
 	 */
@@ -67,6 +73,20 @@ public class Hugger
 		this.highLim = new DigitalInput(HIGHLIM_DIO);
 	}
 	
+	private void setIntakeSpd(double spd)
+	{
+		spd = Math.min(Math.max(spd, -1d), 1d);
+		this.intakeL.set(ControlMode.PercentOutput, spd);
+		this.intakeR.set(ControlMode.PercentOutput, -spd);
+	}
+	
+	private void setTiltSpd(double spd)
+	{
+		spd = Math.min(Math.max(spd, -1d), 1d);
+		this.tilt.set(spd);
+		this.tiltSpd = spd;
+	}
+	
 	/**
 	 * Sets drive motor speeds based on driver input.
 	 * 
@@ -75,9 +95,23 @@ public class Hugger
 	public void control(MattDupuis matt)
 	{
 		// Intake speeds
-		double intake = matt.getIntake();
-		this.intakeL.set(ControlMode.PercentOutput, intake);
-		this.intakeR.set(ControlMode.PercentOutput, -intake);
+		double intake = matt.getIntake() * BASE_INTAKE_SPD;
+		this.setIntakeSpd(intake);
+		
+		// Tilt
+		double spd;
+		switch (matt.getTilt())
+		{
+			case Up:
+				spd = TILT_UP_SPD;
+				break;
+			case Down:
+				spd = TILT_DOWN_SPD;
+				break;
+			default:
+				spd = 0d;
+		}
+		this.tilt.set(spd);
 	}
 	
 	/**
@@ -88,5 +122,26 @@ public class Hugger
 	public double getAngle()
 	{
 		return this.tiltEnc.getDistance() * 100;
+	}
+	
+	/**
+	 * Gets the current tilt motor speed; -1 means full speed tilting up, 0
+	 * means no motion, 1 means full speed tilting down.
+	 * 
+	 * @return Tilt speed, between -1 and 1
+	 */
+	public double getTiltSpeed()
+	{
+		return this.tiltSpd;
+	}
+	
+	public boolean getLowLim()
+	{
+		return !this.lowLim.get();
+	}
+	
+	public boolean getHighLim()
+	{
+		return !this.highLim.get();
 	}
 }

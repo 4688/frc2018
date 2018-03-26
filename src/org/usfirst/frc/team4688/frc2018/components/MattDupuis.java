@@ -82,4 +82,29 @@ public class MattDupuis
 		boolean reverse = this.driver.getRawButton(EJECT_DBTN);
 		return this.driver.getRawAxis(INTAKE_DAXIS) * (reverse ? -1d : 1d);
 	}
+	
+	/**
+	 * Enumeration of possible hugger tilt actions.
+	 */
+	public static enum Tilt
+	{
+		None, Up, Down
+	}
+	
+	/**
+	 * 
+	 */
+	public Tilt getTilt()
+	{
+		int dpad = this.driver.getPOV();
+		if (dpad == 0)
+		{
+			return Tilt.Up;
+		}
+		else if (dpad == 180)
+		{
+			return Tilt.Down;
+		}
+		return Tilt.None;
+	}
 }

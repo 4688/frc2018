@@ -40,6 +40,11 @@ public class Dashboard
 	private NetworkTableEntry leftSpdEntry, rightSpdEntry;
 	private NetworkTableEntry distanceEntry, headingEntry;
 	
+	// Hugger tilt entries
+	private NetworkTableEntry tiltEntry;
+	private NetworkTableEntry tiltSpdEntry;
+	private NetworkTableEntry tiltLowLimEntry, tiltHighLimEntry;
+	
 	// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
@@ -80,6 +85,12 @@ public class Dashboard
 		this.rightSpdEntry = this.table.getEntry("rightSpd");
 		this.distanceEntry = this.table.getEntry("distance");
 		this.headingEntry = this.table.getEntry("heading");
+		
+		// Hugger entries
+		this.tiltEntry = this.table.getEntry("tilt");
+		this.tiltSpdEntry = this.table.getEntry("tiltSpd");
+		this.tiltLowLimEntry = this.table.getEntry("tiltLowLim");
+		this.tiltHighLimEntry = this.table.getEntry("tiltHighLim");
 		
 		// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
@@ -242,5 +253,22 @@ public class Dashboard
 		// Update heading
 		double heading = drive.getHeading();
 		this.headingEntry.setDouble(heading);
+	}
+	
+	public void updateHugger(Hugger hugger)
+	{
+		// Update tilt angle
+		double tilt = hugger.getAngle();
+		this.tiltEntry.setDouble(tilt);
+		
+		// Update tilt speed
+		double tiltSpd = hugger.getTiltSpeed();
+		this.tiltSpdEntry.setDouble(tiltSpd);
+		
+		// Update limit switches
+		boolean lowLim = hugger.getLowLim();
+		this.tiltLowLimEntry.setBoolean(lowLim);
+		boolean highLim = hugger.getHighLim();
+		this.tiltHighLimEntry.setBoolean(highLim);
 	}
 }
