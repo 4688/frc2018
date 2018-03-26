@@ -32,6 +32,10 @@ public class Dashboard
 	private NetworkTableEntry batteryEntry;
 	private NetworkTableEntry platesEntry;
 	
+	// Driver input entries
+	private NetworkTableEntry forwardEntry, turnEntry;
+	private NetworkTableEntry turboEntry;
+	
 	// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
@@ -60,7 +64,12 @@ public class Dashboard
 		this.modeEntry = this.table.getEntry("mode");
 		this.timeEntry = this.table.getEntry("time");
 		this.batteryEntry = this.table.getEntry("battery");
-		this.platesEntry = this.table.getEntry("platesEntry");
+		this.platesEntry = this.table.getEntry("plates");
+		
+		// Driver input entries
+		this.forwardEntry = this.table.getEntry("forward");
+		this.turnEntry = this.table.getEntry("turn");
+		this.turboEntry = this.table.getEntry("turbo");
 		
 		// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
@@ -181,5 +190,25 @@ public class Dashboard
 				this.modeEntry.setString("Test");
 				break;
 		}
+	}
+	
+	/**
+	 * Sends driver input (forward, turn, turbo) to the dashboard.
+	 * 
+	 * @param matt The Matt Dupuis to send to the dashboard
+	 */
+	public void updateMatt(MattDupuis matt)
+	{
+		// Update forward
+		double fwd = matt.getForward();
+		this.forwardEntry.setDouble(fwd);
+		
+		// Update turn
+		double turn = matt.getTurn();
+		this.turnEntry.setDouble(turn);
+		
+		// Update turbo
+		double turbo = matt.getTurbo();
+		this.turboEntry.setDouble(turbo);
 	}
 }
