@@ -2,9 +2,9 @@
 
 package org.usfirst.frc.team4688.frc2018.components;
 
+import edu.wpi.cscore.*;
 import edu.wpi.first.networktables.*;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.*;
 
 /**
  * Sends information from the robot to the dashboard over NetworkTables.
@@ -13,9 +13,12 @@ import edu.wpi.first.wpilibj.RobotController;
  */
 public class Dashboard
 {
-	// Dashboard info update period, in Hz
-	// Should be a factor of 50 because the update checks for a remainder of 0
+	// Dashboard info update period, in Hz; should be a factor of 50 because the
+	// update checks for a remainder of 0
 	private final int UPDATE_RATE = 10;
+	
+	// Camera server network port; should be in range 1180-1190
+	private final int CAMERA_PORT = 1181;
 	
 	// Table containing entries
 	private NetworkTable table;
@@ -28,6 +31,10 @@ public class Dashboard
 	private NetworkTableEntry modeEntry, timeEntry;
 	private NetworkTableEntry batteryEntry;
 	private NetworkTableEntry platesEntry;
+	
+	// Camera and server
+	private UsbCamera camera;
+	private MjpegServer server;
 	
 	// Iteration timer
 	private int timer;
@@ -54,6 +61,11 @@ public class Dashboard
 		this.timeEntry = this.table.getEntry("time");
 		this.batteryEntry = this.table.getEntry("battery");
 		this.platesEntry = this.table.getEntry("platesEntry");
+		
+		// Set up and start streaming camera feed to server
+		this.camera = new UsbCamera("cam0", 0);
+		this.server = new MjpegServer("server0", CAMERA_PORT);
+		this.server.setSource(this.camera);
 		
 		// Initialize timer
 		this.timer = 0;
