@@ -18,6 +18,10 @@ public class MattDupuis
 	private final int FORWARD_DAXIS = 1;
 	private final int TURN_DAXIS = 4;
 	private final int TURBO_DAXIS = 2;
+	private final int INTAKE_DAXIS = 3;
+	
+	// Driver button indices
+	private final int EJECT_DBTN = 2;
 	
 	// Xbox controller and button board
 	private Joystick driver, board;
@@ -63,5 +67,17 @@ public class MattDupuis
 	public double getTurbo()
 	{
 		return this.driver.getRawAxis(TURBO_DAXIS);
+	}
+	
+	/**
+	 * Gets the intake axis between -1 and 1; 1 means full eject speed, 0 means
+	 * no motion, and -1 means full intake speed.
+	 * 
+	 * @return The intake axis, between -1 and 1
+	 */
+	public double getIntake()
+	{
+		boolean reverse = this.driver.getRawButton(EJECT_DBTN);
+		return this.driver.getRawAxis(INTAKE_DAXIS) * (reverse ? -1d : 1d);
 	}
 }
