@@ -92,19 +92,23 @@ public class MattDupuis
 	}
 	
 	/**
+	 * Returns what action is currently being performed with regards to the
+	 * hugger tilt.
 	 * 
+	 * @return Whether the hugger should tilt up, down, or not at all.
 	 */
 	public Tilt getTilt()
 	{
+		// Get DPad value
 		int dpad = this.driver.getPOV();
-		if (dpad == 0)
-		{
-			return Tilt.Up;
-		}
-		else if (dpad == 180)
-		{
-			return Tilt.Down;
-		}
+		
+		// If pressing DPad up, tilt up
+		if (dpad == 0) return Tilt.Up;
+		
+		// If pressing DPad down, tilt down
+		else if (dpad == 180) return Tilt.Down;
+				
+		// If pressing anywhere else, do not tilt
 		return Tilt.None;
 	}
 }
