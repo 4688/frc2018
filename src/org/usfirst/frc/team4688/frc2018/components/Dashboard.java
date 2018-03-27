@@ -46,9 +46,10 @@ public class Dashboard
 	private NetworkTableEntry tiltSpdEntry;
 	private NetworkTableEntry tiltLowLimEntry, tiltHighLimEntry;
 	
-	// Camera and server
+	/*// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
+	//*/
 	
 	// Iteration timer
 	private int timer;
@@ -238,7 +239,7 @@ public class Dashboard
 	/**
 	 * Sends drive speeds and sensors to the dashboard.
 	 * 
-	 * @param drive The Drive Train object
+	 * @param drive The Drive Train object to monitor
 	 */
 	public void updateDrive(DriveTrain drive)
 	{
@@ -257,6 +258,11 @@ public class Dashboard
 		this.headingEntry.setDouble(heading);
 	}
 	
+	/**
+	 * Sends hugger tilt info to the dashboard.
+	 * 
+	 * @param hugger The Hugger object to monitor
+	 */
 	public void updateHugger(Hugger hugger)
 	{
 		// Update tilt angle
