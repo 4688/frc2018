@@ -92,6 +92,15 @@ public class Robot extends IterativeRobot
 	}
 	
 	/**
+	 * This method is called 50 times per second while the robot is in Auto
+	 * mode.
+	 */
+	public void autonomousPeriodic()
+	{
+		this.auto.update(this.drive, this.hugger, this.lift);
+	}
+	
+	/**
 	 * This method is called once each time the robot enters Test mode.
 	 */
 	public void testInit()

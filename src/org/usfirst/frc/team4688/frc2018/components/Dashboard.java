@@ -61,6 +61,10 @@ public class Dashboard
 	private NetworkTableEntry gyroSEntry, gyroKPEntry, gyroKIEntry, gyroKDEntry;
 	private NetworkTableEntry liftSEntry, liftKPEntry, liftKIEntry, liftKDEntry;
 	private NetworkTableEntry tiltSEntry, tiltKPEntry, tiltKIEntry, tiltKDEntry;
+	private NetworkTableEntry driveGainEntry, driveErrorEntry;
+	private NetworkTableEntry gyroGainEntry, gyroErrorEntry;
+	private NetworkTableEntry liftGainEntry, liftErrorEntry;
+	private NetworkTableEntry tiltGainEntry, tiltErrorEntry;
 	
 	// Camera and server
 	private UsbCamera camera;
@@ -268,17 +272,20 @@ public class Dashboard
 	 */
 	public void updateMatt(MattDupuis matt)
 	{
-		// Update forward
-		double fwd = matt.getForward();
-		this.forwardEntry.setDouble(fwd);
-		
-		// Update turn
-		double turn = matt.getTurn();
-		this.turnEntry.setDouble(turn);
-		
-		// Update turbo
-		double turbo = matt.getTurbo();
-		this.turboEntry.setDouble(turbo);
+		if (this.timer % (50 / UPDATE_RATE) == 0)
+		{
+			// Update forward
+			double fwd = matt.getForward();
+			this.forwardEntry.setDouble(fwd);
+			
+			// Update turn
+			double turn = matt.getTurn();
+			this.turnEntry.setDouble(turn);
+			
+			// Update turbo
+			double turbo = matt.getTurbo();
+			this.turboEntry.setDouble(turbo);
+		}
 	}
 	
 	/**
@@ -288,19 +295,22 @@ public class Dashboard
 	 */
 	public void updateDrive(DriveTrain drive)
 	{
-		// Update drive speeds
-		double l = drive.getLSpd();
-		double r = drive.getRSpd();
-		this.leftSpdEntry.setDouble(l);
-		this.rightSpdEntry.setDouble(r);
-		
-		// Update distance
-		double distance = drive.getDistance();
-		this.distanceEntry.setDouble(distance);
-		
-		// Update heading
-		double heading = drive.getHeading();
-		this.headingEntry.setDouble(heading);
+		if (this.timer % (50 / UPDATE_RATE) == 0)
+		{
+			// Update drive speeds
+			double l = drive.getLSpd();
+			double r = drive.getRSpd();
+			this.leftSpdEntry.setDouble(l);
+			this.rightSpdEntry.setDouble(r);
+			
+			// Update distance
+			double distance = drive.getDistance();
+			this.distanceEntry.setDouble(distance);
+			
+			// Update heading
+			double heading = drive.getHeading();
+			this.headingEntry.setDouble(heading);
+		}
 	}
 	
 	/**
@@ -310,19 +320,22 @@ public class Dashboard
 	 */
 	public void updateHugger(Hugger hugger)
 	{
-		// Update tilt angle
-		double tilt = hugger.getAngle();
-		this.tiltEntry.setDouble(tilt);
-		
-		// Update tilt speed
-		double tiltSpd = hugger.getTiltSpeed();
-		this.tiltSpdEntry.setDouble(tiltSpd);
-		
-		// Update limit switches
-		boolean lowLim = hugger.getLowLim();
-		this.tiltLowLimEntry.setBoolean(lowLim);
-		boolean highLim = hugger.getHighLim();
-		this.tiltHighLimEntry.setBoolean(highLim);
+		if (this.timer % (50 / UPDATE_RATE) == 0)
+		{
+			// Update tilt angle
+			double tilt = hugger.getAngle();
+			this.tiltEntry.setDouble(tilt);
+			
+			// Update tilt speed
+			double tiltSpd = hugger.getTiltSpeed();
+			this.tiltSpdEntry.setDouble(tiltSpd);
+			
+			// Update limit switches
+			boolean lowLim = hugger.getLowLim();
+			this.tiltLowLimEntry.setBoolean(lowLim);
+			boolean highLim = hugger.getHighLim();
+			this.tiltHighLimEntry.setBoolean(highLim);
+		}
 	}
 	
 	/**
@@ -332,15 +345,18 @@ public class Dashboard
 	 */
 	public void updateLift(Lift lift)
 	{
-		// Update lift height
-		double height = lift.getHeight();
-		this.liftEntry.setDouble(height);
-		
-		// Update limit switches
-		boolean lowLim = lift.getLowLim();
-		this.liftLowLimEntry.setBoolean(lowLim);
-		boolean highLim = lift.getHighLim();
-		this.liftHighLimEntry.setBoolean(highLim);
+		if (this.timer % (50 / UPDATE_RATE) == 0)
+		{
+			// Update lift height
+			double height = lift.getHeight();
+			this.liftEntry.setDouble(height);
+			
+			// Update limit switches
+			boolean lowLim = lift.getLowLim();
+			this.liftLowLimEntry.setBoolean(lowLim);
+			boolean highLim = lift.getHighLim();
+			this.liftHighLimEntry.setBoolean(highLim);
+		}
 	}
 	
 	/**
@@ -350,21 +366,43 @@ public class Dashboard
 	 */
 	public void updateClimber(Climber climber)
 	{
-		// Update deploy status
-		boolean deployed = climber.isDeployed();
-		this.deployedEntry.setBoolean(deployed);
+		if (this.timer % (50 / UPDATE_RATE) == 0)
+		{
+			// Update deploy status
+			boolean deployed = climber.isDeployed();
+			this.deployedEntry.setBoolean(deployed);
+		}
 	}
 	
 	/**
-	 * Sends the autonomous routine number to the dashboard.
+	 * Sends the autonomous routine number and PID gains/error to the dashboard.
 	 * 
 	 * @param auto The Autonomous object to monitor
 	*/
 	public void updateAutonomous(Autonomous auto)
 	{
-		// Update routine number
-		int routine = auto.getRoutine();
-		this.routineEntry.setNumber(routine);
+		if (this.timer % (50 / UPDATE_RATE) == 0)
+		{
+			// Update routine number
+			int routine = auto.getRoutine();
+			this.routineEntry.setNumber(routine);
+			
+			// Update gains and error
+			this.driveGainEntry.setDouble(auto.driveLoop.get());
+			this.driveErrorEntry.setDouble(auto.driveLoop.getError());
+			this.gyroGainEntry.setDouble(auto.gyroLoop.get());
+			this.gyroErrorEntry.setDouble(auto.gyroLoop.getError());
+			this.liftGainEntry.setDouble(auto.liftLoop.get());
+			this.liftErrorEntry.setDouble(auto.liftLoop.getError());
+			this.tiltGainEntry.setDouble(auto.tiltLoop.get());
+			this.tiltErrorEntry.setDouble(auto.tiltLoop.getError());
+			
+			// Retrieve new values and update loop constants
+			auto.driveLoop.update(this.getConstants(PIDType.Drive));
+			auto.gyroLoop.update(this.getConstants(PIDType.Gyro));
+			auto.liftLoop.update(this.getConstants(PIDType.Lift));
+			auto.tiltLoop.update(this.getConstants(PIDType.Tilt));
+		}
 	}
 	
 	/**
@@ -402,7 +440,7 @@ public class Dashboard
 	 * 
 	 * @return PIDInfo object containing setpoint and coefficients
 	 */
-	public PIDInfo getConstants(PIDType pid)
+	private PIDInfo getConstants(PIDType pid)
 	{
 		// Constants
 		double s, kP, kI, kD;

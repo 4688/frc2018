@@ -21,6 +21,9 @@ public class Autonomous
 	// Autonomous select inputs
 	private DigitalInput a1, a2, a4, a8, a16;
 	
+	// PID loops
+	public PIDLoop driveLoop, gyroLoop, liftLoop, tiltLoop;
+	
 	/**
 	 * Constructor.
 	 */
@@ -32,6 +35,12 @@ public class Autonomous
 		this.a4 = new DigitalInput(AUTO4_DIO);
 		this.a8 = new DigitalInput(AUTO8_DIO);
 		this.a16 = new DigitalInput(AUTO16_DIO);
+		
+		// PID loops
+		this.driveLoop = new PIDLoop(0d, 0d, 0d, 0d);
+		this.gyroLoop = new PIDLoop(0d, 0d, 0d, 0d);
+		this.liftLoop = new PIDLoop(0d, 0d, 0d, 0d);
+		this.tiltLoop = new PIDLoop(0d, 0d, 0d, 0d);
 	}
 	
 	/**
@@ -54,6 +63,30 @@ public class Autonomous
 	}
 	
 	/**
+	 * Re-calculates PID loops and retrieves new data from the dashboard.
+	 */
+	public void update(DriveTrain drive, Hugger hugger, Lift lift)
+	{		
+		// Update loops
+		this.driveLoop.calculate(drive.getDistance());
+		this.gyroLoop.calculate(drive.getHeading());
+		this.liftLoop.calculate(lift.getHeight());
+		this.tiltLoop.calculate(hugger.getAngle());
+		
+		// Gains
+		double gDrive = this.driveLoop.get();
+		double gGyro = this.gyroLoop.get();
+		double gLift = this.liftLoop.get();
+		double gTilt = this.tiltLoop.get();
+		
+		// Set motor speeds
+		drive.setLSpd(gDrive + gGyro);
+		drive.setRSpd(-gDrive);
+		lift.setLiftSpd(gLift);
+		hugger.setTiltSpd(gTilt);
+	}
+	
+	/**
 	 * Manages a single PID loop.
 	 * 
 	 * @author Jacob
@@ -63,9 +96,11 @@ public class Autonomous
 		// Setpoint and coefficients
 		private double s, kP, kI, kD;
 		
-		// Stored integral and previous error
-		private double integral
-		private Object error;
+		// Proprtion, Integral, and Derivative values
+		private double P, I, D;
+		
+		// Store previous error
+		private Object e;
 		
 		public PIDLoop(double s, double kP, double kI, double kD)
 		{
@@ -74,8 +109,18 @@ public class Autonomous
 			this.kI = kI;
 			this.kD = kD;
 			
-			this.integral = 0d;
-			this.error = null;
+			this.P = 0d;
+			this.I = 0d;
+			this.D = 0d;
+			this.e = null;
+		}
+		
+		public void updateSetpoint(double newS)
+		{
+			this.s = newS;
+			
+			this.I = 0d;
+			this.e = null;
 		}
 		
 		public void update(Dashboard.PIDInfo theNew)
@@ -85,14 +130,30 @@ public class Autonomous
 			this.kI = theNew.kI;
 			this.kD = theNew.kD;
 			
-			this.integral = 0d;
-			this.error = null;
+			this.I = 0d;
+			this.e = null;
 		}
 		
-		public double getGain(double input)
+		public void calculate(double input)
 		{
-			double E = this.s - input;
-			double P = this.kP * E;
+			this.P = this.s - input;
+			this.I += (this.s - input)  / 50d;
+			this.D = 0d;
+			if (this.e instanceof Double)
+			{
+				this.D = (this.s - input - ((double) this.e)) * 50d; 
+			}
+			this.e = this.s - input;
+		}
+		
+		public double get()
+		{
+			return this.kP*this.P + this.kI*this.I + this.kD*this.D;
+		}
+		
+		public double getError()
+		{
+			return this.P;
 		}
 	}
 }
