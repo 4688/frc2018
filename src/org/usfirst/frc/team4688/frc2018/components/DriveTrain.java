@@ -73,7 +73,7 @@ public class DriveTrain
 	 */
 	public void setLSpd(double spd)
 	{
-		// Clamp speeds to ±100%
+		// Clamp speeds to +/-100%
 		spd = Math.min(Math.max(spd, -1d), 1d);
 		
 		// If speed is above deadband:
@@ -101,7 +101,7 @@ public class DriveTrain
 	 */
 	public void setRSpd(double spd)
 	{
-		// Clamp speeds to ±100%
+		// Clamp speeds to +/-100%
 		spd = Math.min(Math.max(spd, -1d), 1d);
 		
 		// If speed is above deadband:

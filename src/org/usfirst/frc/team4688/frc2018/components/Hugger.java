@@ -17,10 +17,10 @@ public class Hugger
 	private final double BASE_INTAKE_SPD = 1d;
 	
 	// Upwards tilt speed
-	private final double TILT_UP_SPD = -1d;
+	private final double TILT_UP_SPD = 1d;
 	
 	// Downwards tilt speed
-	private final double TILT_DOWN_SPD = 1d;
+	private final double TILT_DOWN_SPD = -1d;
 	
 	// Intake motor CAN indices
 	private final int INTAKE_L_CAN = 5;
@@ -73,14 +73,30 @@ public class Hugger
 		this.highLim = new DigitalInput(HIGHLIM_DIO);
 	}
 	
-	private void setIntakeSpd(double spd)
+	/**
+	 * Sets the intake motor speeds; -1 means full speed eject and 1 means full
+	 * speed intake.
+	 * 
+	 * @param spd Intake speed, between -1 and 1
+	 */
+	public void setIntakeSpd(double spd)
 	{
+		// Clamp speeds to +/-100%
 		spd = Math.min(Math.max(spd, -1d), 1d);
+		
+		// Set speeds
 		this.intakeL.set(ControlMode.PercentOutput, spd);
 		this.intakeR.set(ControlMode.PercentOutput, -spd);
 	}
 	
-	private void setTiltSpd(double spd)
+	/**
+	 * Sets the tilt motor speed taking limit switches into consideration; -1
+	 * means full speed tilt down, 0 means no motion, and 1 means full speed
+	 * tilt up.
+	 * 
+	 * @param spd Tilt motor speed, between -1 and 1
+	 */
+	public void setTiltSpd(double spd)
 	{
 		spd = Math.min(Math.max(spd, -1d), 1d);
 		this.tilt.set(spd);
@@ -111,7 +127,7 @@ public class Hugger
 			default:
 				spd = 0d;
 		}
-		this.tilt.set(spd);
+		this.setTiltSpd(spd);
 	}
 	
 	/**
@@ -135,11 +151,23 @@ public class Hugger
 		return this.tiltSpd;
 	}
 	
+	/**
+	 * Returns the INVERTED value of the bottom limit switch; true means the
+	 * switch is being made and false means it is not.
+	 * 
+	 * @return True if the switch is being made, false otherwise.
+	 */
 	public boolean getLowLim()
 	{
 		return !this.lowLim.get();
 	}
 	
+	/**
+	 * Returns the INVERTED value of the top limit switch; true means the switch
+	 * is being made and false means it is not.
+	 * 
+	 * @return True if the switch is being made, false otherwise.
+	 */
 	public boolean getHighLim()
 	{
 		return !this.highLim.get();
