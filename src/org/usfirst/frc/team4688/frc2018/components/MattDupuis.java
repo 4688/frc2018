@@ -24,6 +24,8 @@ public class MattDupuis
 	
 	// Driver button indices
 	private final int EJECT_DBTN = 2;
+	private final int RAISE_DBTN = 6;
+	private final int LOWER_DBTN = 5;
 	
 	// Xbox controller and button board
 	private Joystick driver, board;
@@ -95,7 +97,7 @@ public class MattDupuis
 	 * Returns what action is currently being performed with regards to the
 	 * hugger tilt.
 	 * 
-	 * @return Whether the hugger should tilt up, down, or not at all.
+	 * @return Whether the hugger should tilt up, down, or not at all
 	 */
 	public Tilt getTilt()
 	{
@@ -110,5 +112,32 @@ public class MattDupuis
 				
 		// If pressing anywhere else, do not tilt
 		return Tilt.None;
+	}
+	
+	/**
+	 * Enumeration of possible lift actions.
+	 */
+	public static enum Lift
+	{
+		None, Raise, Lower
+	}
+	
+	/**
+	 * Returns what action is currently being performed with the lift.
+	 * 
+	 * @return Whether the lift is being raised, being lowered, or not moving
+	 */
+	public Lift getLift()
+	{
+		// Check raise/lower buttons
+		boolean raise = this.driver.getRawButton(RAISE_DBTN);
+		boolean lower = this.driver.getRawButton(LOWER_DBTN);
+		
+		// If only one of the buttons are being pressed, return the action
+		if (raise && !lower) return Lift.Raise;
+		if (lower && !raise) return Lift.Lower;
+		
+		// Otherwise, do nothing
+		return Lift.None;
 	}
 }
