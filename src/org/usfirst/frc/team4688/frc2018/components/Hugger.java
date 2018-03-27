@@ -173,4 +173,12 @@ public class Hugger
 	{
 		return !this.highLim.get();
 	}
+	
+	/**
+	 * Zeroes encoder.
+	 */
+	public void zeroSensors()
+	{
+		this.tiltEnc.reset();
+	}
 }

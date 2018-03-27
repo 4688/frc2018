@@ -187,4 +187,12 @@ public class Lift
 	{
 		return !this.highLim.get();
 	}
+	
+	/**
+	 * Zeroes encoder.
+	 */
+	public void zeroSensors()
+	{
+		this.liftEnc.reset();
+	}
 }

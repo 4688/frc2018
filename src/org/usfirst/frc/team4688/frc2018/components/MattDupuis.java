@@ -167,4 +167,14 @@ public class MattDupuis
 		}
 		return Climber.None;
 	}
+	
+	/**
+	 * Returns whether the user button on the RIO is pressed.
+	 * 
+	 * @return True if the RIO user button is pressed, false otherwise
+	 */
+	public boolean isZeroingSensors()
+	{
+		return RobotController.getUserButton();
+	}
 }

@@ -52,6 +52,14 @@ public class Robot extends IterativeRobot
 		this.dashboard.updateLift(this.lift);
 		this.dashboard.updateClimber(this.climber);
 		this.dashboard.updateAutonomous(this.auto);
+		
+		// Zero sensors if button is pressed
+		if (this.matt.isZeroingSensors())
+		{
+			this.drive.zeroSensors();
+			this.hugger.zeroSensors();
+			this.lift.zeroSensors();
+		}
 	}
 	
 	/**
@@ -61,6 +69,13 @@ public class Robot extends IterativeRobot
 	{
 		this.dashboard.updateMode(Dashboard.Mode.Disabled);
 	}
+	
+	/**
+	 * This method is called 50 times per second while the robot is in a
+	 * disabled state.
+	 */
+	public void disabledPeriodic()
+	{}
 	
 	/**
 	 * This method is called once each time the robot enters Teleop mode.
@@ -107,4 +122,11 @@ public class Robot extends IterativeRobot
 	{
 		this.dashboard.updateMode(Dashboard.Mode.Test);
 	}
+	
+	/**
+	 * This method is called 50 times per second while the robot is in test
+	 * mode.
+	 */
+	public void testPeriodic()
+	{}
 }

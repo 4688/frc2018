@@ -199,4 +199,13 @@ public class DriveTrain
 	{
 		return this.navx.getAngle();
 	}
+	
+	/**
+	 * Zeroes drive encoder and gyro.
+	 */
+	public void zeroSensors()
+	{
+		this.lfm.getSensorCollection().setQuadraturePosition(0, 0);
+		this.navx.reset();
+	}
 }
