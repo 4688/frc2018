@@ -53,6 +53,15 @@ public class Dashboard
 	// Climber entry
 	private NetworkTableEntry deployedEntry;
 	
+	// Autonomous routine entry
+	private NetworkTableEntry routineEntry;
+	
+	// PID entries
+	private NetworkTableEntry driveSEntry, driveKPEntry, driveKIEntry, driveKDEntry;
+	private NetworkTableEntry gyroSEntry, gyroKPEntry, gyroKIEntry, gyroKDEntry;
+	private NetworkTableEntry liftSEntry, liftKPEntry, liftKIEntry, liftKDEntry;
+	private NetworkTableEntry tiltSEntry, tiltKPEntry, tiltKIEntry, tiltKDEntry;
+	
 	// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
@@ -108,6 +117,27 @@ public class Dashboard
 		
 		// Climber entry
 		this.deployedEntry = this.table.getEntry("deployed");
+		
+		// Autonomous routine entry
+		this.routineEntry = this.table.getEntry("routine");
+		
+		// PID entries
+		this.driveSEntry = this.table.getEntry("PID/drive/s");
+		this.driveKPEntry = this.table.getEntry("PID/drive/kP");
+		this.driveKIEntry = this.table.getEntry("PID/drive/kI");
+		this.driveKDEntry = this.table.getEntry("PID/drive/kD");
+		this.gyroSEntry = this.table.getEntry("PID/gyro/s");
+		this.gyroKPEntry = this.table.getEntry("PID/gyro/kP");
+		this.gyroKIEntry = this.table.getEntry("PID/gyro/kI");
+		this.gyroKDEntry = this.table.getEntry("PID/gyro/kD");
+		this.liftSEntry = this.table.getEntry("PID/lift/s");
+		this.liftKPEntry = this.table.getEntry("PID/lift/kP");
+		this.liftKIEntry = this.table.getEntry("PID/lift/kI");
+		this.liftKDEntry = this.table.getEntry("PID/lift/kD");
+		this.tiltSEntry = this.table.getEntry("PID/tilt/s");
+		this.tiltKPEntry = this.table.getEntry("PID/tilt/kP");
+		this.tiltKIEntry = this.table.getEntry("PID/tilt/kI");
+		this.tiltKDEntry = this.table.getEntry("PID/tilt/kD");
 		
 		// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
@@ -323,5 +353,92 @@ public class Dashboard
 		// Update deploy status
 		boolean deployed = climber.isDeployed();
 		this.deployedEntry.setBoolean(deployed);
+	}
+	
+	/**
+	 * Sends the autonomous routine number to the dashboard.
+	 * 
+	 * @param auto The Autonomous object to monitor
+	*/
+	public void updateAutonomous(Autonomous auto)
+	{
+		// Update routine number
+		int routine = auto.getRoutine();
+		this.routineEntry.setNumber(routine);
+	}
+	
+	/**
+	 * Represents the four constants (setpoint + three coefficients) in a single
+	 * PID loop.
+	 * 
+	 * @author Jacob
+	 */
+	public static class PIDInfo
+	{
+		// Constants received from dashboard
+		public double s, kP, kI, kD;
+		
+		public PIDInfo(double s, double kP, double kI, double kD)
+		{
+			// Set constants
+			this.s = s;
+			this.kP = kP;
+			this.kI = kI;
+			this.kD = kD;
+		}
+	}
+	
+	/**
+	 * Possible PID loops for which information can be retrieved from the
+	 * dashboard.
+	 */
+	public enum PIDType
+	{
+		Drive, Gyro, Lift, Tilt
+	}
+	
+	/**
+	 * Returns the PID constants for a given loop.
+	 * 
+	 * @return PIDInfo object containing setpoint and coefficients
+	 */
+	public PIDInfo getConstants(PIDType pid)
+	{
+		// Constants
+		double s, kP, kI, kD;
+		
+		// Get constants for the appropriate loop type
+		switch (pid)
+		{
+			case Drive:
+				s = this.driveSEntry.getDouble(0d);
+				kP = this.driveKPEntry.getDouble(0d);
+				kI = this.driveKIEntry.getDouble(0d);
+				kD = this.driveKDEntry.getDouble(0d);
+				break;
+			case Gyro:
+				s = this.gyroSEntry.getDouble(0d);
+				kP = this.gyroKPEntry.getDouble(0d);
+				kI = this.gyroKIEntry.getDouble(0d);
+				kD = this.gyroKDEntry.getDouble(0d);
+				break;
+			case Lift:
+				s = this.liftSEntry.getDouble(0d);
+				kP = this.liftKPEntry.getDouble(0d);
+				kI = this.liftKIEntry.getDouble(0d);
+				kD = this.liftKDEntry.getDouble(0d);
+				break;
+			case Tilt:
+				s = this.tiltSEntry.getDouble(0d);
+				kP = this.tiltKPEntry.getDouble(0d);
+				kI = this.tiltKIEntry.getDouble(0d);
+				kD = this.tiltKDEntry.getDouble(0d);
+				break;
+			default:
+				return new PIDInfo(0d, 0d, 0d, 0d);
+		}
+		
+		// Return constants
+		return new PIDInfo(s, kP, kI, kD);
 	}
 }

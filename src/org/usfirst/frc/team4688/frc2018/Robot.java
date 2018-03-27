@@ -19,6 +19,7 @@ public class Robot extends IterativeRobot
 	private Hugger hugger;
 	private Lift lift;
 	private Climber climber;
+	private Autonomous auto;
 	
 	/**
 	 * This method is called once each time the robot starts up. Here it
@@ -32,6 +33,7 @@ public class Robot extends IterativeRobot
 		this.hugger = new Hugger();
 		this.lift = new Lift();
 		this.climber = new Climber();
+		this.auto = new Autonomous();
 	}
 	
 	/**
@@ -49,6 +51,7 @@ public class Robot extends IterativeRobot
 		this.dashboard.updateHugger(this.hugger);
 		this.dashboard.updateLift(this.lift);
 		this.dashboard.updateClimber(this.climber);
+		this.dashboard.updateAutonomous(this.auto);
 	}
 	
 	/**
