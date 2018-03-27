@@ -50,6 +50,9 @@ public class Dashboard
 	private NetworkTableEntry liftEntry;
 	private NetworkTableEntry liftLowLimEntry, liftHighLimEntry;
 	
+	// Climber entry
+	private NetworkTableEntry deployedEntry;
+	
 	// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
@@ -102,6 +105,9 @@ public class Dashboard
 		this.liftEntry = this.table.getEntry("lift");
 		this.liftLowLimEntry = this.table.getEntry("liftLowLim");
 		this.liftHighLimEntry = this.table.getEntry("liftHighLim");
+		
+		// Climber entry
+		this.deployedEntry = this.table.getEntry("deployed");
 		
 		// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
@@ -305,5 +311,17 @@ public class Dashboard
 		this.liftLowLimEntry.setBoolean(lowLim);
 		boolean highLim = lift.getHighLim();
 		this.liftHighLimEntry.setBoolean(highLim);
+	}
+	
+	/**
+	 * Sends the climber deploy status to the dashboard.
+	 * 
+	 * @param climber The Climber object to monitor
+	 */
+	public void updateClimber(Climber climber)
+	{
+		// Update deploy status
+		boolean deployed = climber.isDeployed();
+		this.deployedEntry.setBoolean(deployed);
 	}
 }

@@ -27,6 +27,10 @@ public class MattDupuis
 	private final int RAISE_DBTN = 6;
 	private final int LOWER_DBTN = 5;
 	
+	// Button board indices
+	private final int DEPLOY_BBTN = 1;
+	private final int CLIMB_BBTN = 2;
+	
 	// Xbox controller and button board
 	private Joystick driver, board;
 	
@@ -123,7 +127,7 @@ public class MattDupuis
 	}
 	
 	/**
-	 * Returns what action is currently being performed with the lift.
+	 * Returns what action is currently being performed by the lift.
 	 * 
 	 * @return Whether the lift is being raised, being lowered, or not moving
 	 */
@@ -139,5 +143,28 @@ public class MattDupuis
 		
 		// Otherwise, do nothing
 		return Lift.None;
+	}
+	
+	/**
+	 * Enumeration of possible climber actions.
+	 */
+	public static enum Climber
+	{
+		None, Deploy, Climb
+	}
+	
+	/**
+	 * Returns what action is currently being performed by the climber.
+	 * 
+	 * @return Whether the climber is being deployed, climbing, or not moving
+	 */
+	public Climber getClimber()
+	{
+		if (DriverStation.getInstance().getMatchTime() <= 30d)
+		{
+			if (this.board.getRawButton(DEPLOY_BBTN)) return Climber.Deploy;
+			if (this.board.getRawButton(CLIMB_BBTN)) return Climber.Climb;
+		}
+		return Climber.None;
 	}
 }
