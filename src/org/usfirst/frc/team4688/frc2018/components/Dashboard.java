@@ -15,10 +15,11 @@ public class Dashboard
 {
 	// Dashboard info update period, in Hz; should be a factor of 50 because the
 	// update checks for a remainder of 0
-	private final int UPDATE_RATE = 10;
+	private final int UPDATE_RATE = 5;
 	
-	// Camera server network port; should be in range 1180-1190
+	/*// Camera server network port; should be in range 1180-1190
 	private final int CAMERA_PORT = 1181;
+	//*/
 	
 	// Table containing entries
 	private NetworkTable table;
@@ -92,10 +93,11 @@ public class Dashboard
 		this.tiltLowLimEntry = this.table.getEntry("tiltLowLim");
 		this.tiltHighLimEntry = this.table.getEntry("tiltHighLim");
 		
-		// Set up and start streaming camera feed to server
+		/*// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
 		this.server = new MjpegServer("server0", CAMERA_PORT);
 		this.server.setSource(this.camera);
+		//*/
 		
 		// Initialize timer
 		this.timer = 0;
