@@ -17,7 +17,7 @@ public class Dashboard
 	// update checks for a remainder of 0
 	private final int UPDATE_RATE = 5;
 	
-	/*// Camera server network port; should be in range 1180-1190
+	// Camera server network port; should be in range 1180-1190
 	private final int CAMERA_PORT = 1181;
 	//*/
 	
@@ -46,7 +46,7 @@ public class Dashboard
 	private NetworkTableEntry tiltSpdEntry;
 	private NetworkTableEntry tiltLowLimEntry, tiltHighLimEntry;
 	
-	/*// Camera and server
+	// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
 	//*/
@@ -94,7 +94,7 @@ public class Dashboard
 		this.tiltLowLimEntry = this.table.getEntry("tiltLowLim");
 		this.tiltHighLimEntry = this.table.getEntry("tiltHighLim");
 		
-		/*// Set up and start streaming camera feed to server
+		// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
 		this.server = new MjpegServer("server0", CAMERA_PORT);
 		this.server.setSource(this.camera);
