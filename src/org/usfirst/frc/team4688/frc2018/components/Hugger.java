@@ -114,7 +114,7 @@ public class Hugger
 		double intake = matt.getIntake() * BASE_INTAKE_SPD;
 		this.setIntakeSpd(intake);
 		
-		// Tilt
+		// Tilt actions
 		double spd;
 		switch (matt.getTilt())
 		{
@@ -124,6 +124,7 @@ public class Hugger
 			case Down:
 				spd = TILT_DOWN_SPD;
 				break;
+			case None:
 			default:
 				spd = 0d;
 		}

@@ -17,6 +17,7 @@ public class Robot extends IterativeRobot
 	private MattDupuis matt;
 	private DriveTrain drive;
 	private Hugger hugger;
+	private Lift lift;
 	
 	/**
 	 * This method is called once each time the robot starts up. Here it
@@ -28,6 +29,7 @@ public class Robot extends IterativeRobot
 		this.matt = new MattDupuis();
 		this.drive = new DriveTrain();
 		this.hugger = new Hugger();
+		this.lift = new Lift();
 	}
 	
 	/**
@@ -43,6 +45,7 @@ public class Robot extends IterativeRobot
 		this.dashboard.updateMatt(this.matt);
 		this.dashboard.updateDrive(this.drive);
 		this.dashboard.updateHugger(this.hugger);
+		this.dashboard.updateLift(this.lift);
 	}
 	
 	/**
@@ -70,6 +73,7 @@ public class Robot extends IterativeRobot
 		// Control components
 		this.drive.control(this.matt);
 		this.hugger.control(this.matt);
+		this.lift.control(this.matt);
 	}
 	
 	/**

@@ -46,6 +46,10 @@ public class Dashboard
 	private NetworkTableEntry tiltSpdEntry;
 	private NetworkTableEntry tiltLowLimEntry, tiltHighLimEntry;
 	
+	// Lift entries
+	private NetworkTableEntry liftEntry;
+	private NetworkTableEntry liftLowLimEntry, liftHighLimEntry;
+	
 	// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
@@ -93,6 +97,11 @@ public class Dashboard
 		this.tiltSpdEntry = this.table.getEntry("tiltSpd");
 		this.tiltLowLimEntry = this.table.getEntry("tiltLowLim");
 		this.tiltHighLimEntry = this.table.getEntry("tiltHighLim");
+		
+		// Lift entries
+		this.liftEntry = this.table.getEntry("lift");
+		this.liftLowLimEntry = this.table.getEntry("liftLowLim");
+		this.liftHighLimEntry = this.table.getEntry("liftHighLim");
 		
 		// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
@@ -278,5 +287,23 @@ public class Dashboard
 		this.tiltLowLimEntry.setBoolean(lowLim);
 		boolean highLim = hugger.getHighLim();
 		this.tiltHighLimEntry.setBoolean(highLim);
+	}
+	
+	/**
+	 * Sends the lift height and limit switches to the dashboard.
+	 * 
+	 * @param lift The Lift object to monitor
+	 */
+	public void updateLift(Lift lift)
+	{
+		// Update lift height
+		double height = lift.getHeight();
+		this.liftEntry.setDouble(height);
+		
+		// Update limit switches
+		boolean lowLim = lift.getLowLim();
+		this.liftLowLimEntry.setBoolean(lowLim);
+		boolean highLim = lift.getHighLim();
+		this.liftHighLimEntry.setBoolean(highLim);
 	}
 }
