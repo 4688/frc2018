@@ -145,13 +145,17 @@ public class DriveTrain
 	 * Sets drive motor speeds based on driver input.
 	 * 
 	 * @param matt The Matt that is driving the robot
+	 * @param liftHeight The height of the lift, in inches
 	 */
-	public void control(MattDupuis matt)
+	public void control(MattDupuis matt, double liftHeight)
 	{
 		// Axis values
 		double fwd = matt.getForward();
 		double turn = matt.getTurn();
 		double turbo = 1d + matt.getTurbo() * (TURBO_FACTOR - 1d);
+		
+		// Height-based slowdown factor
+		double height = 1d / (1d + liftHeight / 64d);
 		
 		// Final left/right speeds
 		double l = 0d, r = 0d;
@@ -176,8 +180,8 @@ public class DriveTrain
 		}
 		
 		// Set motor speeds
-		this.setLSpd(BASE_SPD * l * turbo);
-		this.setRSpd(BASE_SPD * r * turbo);
+		this.setLSpd(BASE_SPD * l * turbo * height);
+		this.setRSpd(BASE_SPD * r * turbo * height);
 	}
 	
 	/**
