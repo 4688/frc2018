@@ -142,6 +142,14 @@ public class Dashboard
 		this.tiltKPEntry = this.table.getEntry("PID/tilt/kP");
 		this.tiltKIEntry = this.table.getEntry("PID/tilt/kI");
 		this.tiltKDEntry = this.table.getEntry("PID/tilt/kD");
+		this.driveGainEntry = this.table.getEntry("PID/drive/gain");
+		this.driveErrorEntry = this.table.getEntry("PID/drive/error");
+		this.gyroGainEntry = this.table.getEntry("PID/gyro/gain");
+		this.gyroErrorEntry = this.table.getEntry("PID/gyro/error");
+		this.liftGainEntry = this.table.getEntry("PID/lift/gain");
+		this.liftErrorEntry = this.table.getEntry("PID/lift/error");
+		this.tiltGainEntry = this.table.getEntry("PID/tilt/gain");
+		this.tiltErrorEntry = this.table.getEntry("PID/tilt/error");
 		
 		// Set up and start streaming camera feed to server
 		this.camera = new UsbCamera("cam0", 0);
