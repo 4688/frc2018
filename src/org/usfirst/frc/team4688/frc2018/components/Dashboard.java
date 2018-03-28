@@ -392,7 +392,7 @@ public class Dashboard
 		if (this.timer % (50 / UPDATE_RATE) == 0)
 		{
 			// Update routine number
-			int routine = auto.getRoutine();
+			int routine = auto.getBehaviorNum();
 			this.routineEntry.setNumber(routine);
 			
 			// Update gains and error
