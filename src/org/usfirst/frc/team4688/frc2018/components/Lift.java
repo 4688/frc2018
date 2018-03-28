@@ -18,11 +18,11 @@ public class Lift
 	private final double LOWER_SPD = -0.6d;
 	
 	// Unlocked and locked servo positions
-	private final double LOCKED_POS = 1d;
-	private final double UNLOCKED_POS = 0.2d;
+	private final double LOCKED_POS = 0.2d;
+	private final double UNLOCKED_POS = 1d;
 	
 	// Delay before allowing chain to move downwards, in 1/50s of a second
-	private final int UNLOCK_DELAY = 10;
+	private final int UNLOCK_DELAY = 20;
 	
 	// Lift motor PWM index
 	private final int LIFT_PWM = 1;
@@ -90,11 +90,12 @@ public class Lift
 		switch (matt.getLift())
 		{
 			case Raise:
+				System.out.println("raise\t" + this.lockTimer + "\t" + UNLOCK_DELAY);
 				this.disengageLock();
 				this.setLiftSpd(RAISE_SPD);
-				this.lockTimer += 1;
 				break;
 			case Lower:
+				System.out.println("lower\t" + this.lockTimer + "\t" + UNLOCK_DELAY);
 				this.disengageLock();
 				if (this.lockTimer >= UNLOCK_DELAY)
 				{
@@ -104,12 +105,11 @@ public class Lift
 				{
 					this.setLiftSpd(0d);
 				}
-				this.lockTimer += 1;
 				break;
 			case None:
 			default:
+				System.out.println("none\t" + this.lockTimer + "\t" + UNLOCK_DELAY);
 				this.engageLock();
-				this.lockTimer = 0;
 				this.setLiftSpd(0d);
 		}
 	}
@@ -144,6 +144,7 @@ public class Lift
 	public void engageLock()
 	{
 		this.lock.set(LOCKED_POS);
+		this.lockTimer = 0;
 	}
 	
 	/**
@@ -153,6 +154,7 @@ public class Lift
 	public void disengageLock()
 	{
 		this.lock.set(UNLOCKED_POS);
+		this.lockTimer += 1;
 	}
 	
 	/**

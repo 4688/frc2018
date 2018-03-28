@@ -14,13 +14,16 @@ import edu.wpi.first.wpilibj.*;
 public class Hugger
 {
 	// Intake/eject speed factor
-	private final double BASE_INTAKE_SPD = 1d;
+	private final double BASE_INTAKE_SPD = -1d;
 	
 	// Upwards tilt speed
-	private final double TILT_UP_SPD = 1d;
+	private final double TILT_UP_SPD = -1d;
 	
 	// Downwards tilt speed
-	private final double TILT_DOWN_SPD = -1d;
+	private final double TILT_DOWN_SPD = 1d;
+	
+	// Encoder degrees tilted per revolution
+	private final double ENC_DPR = 20d;
 	
 	// Intake motor CAN indices
 	private final int INTAKE_L_CAN = 5;
@@ -115,14 +118,14 @@ public class Hugger
 		this.setIntakeSpd(intake);
 		
 		// Tilt actions
-		double spd;
+		double spd = 0d;
 		switch (matt.getTilt())
 		{
 			case Up:
-				spd = TILT_UP_SPD;
+				if (this.highLim.get()) spd = TILT_UP_SPD;
 				break;
 			case Down:
-				spd = TILT_DOWN_SPD;
+				if (this.lowLim.get()) spd = TILT_DOWN_SPD;
 				break;
 			case None:
 			default:
@@ -132,13 +135,14 @@ public class Hugger
 	}
 	
 	/**
-	 * Calculates a very approximate angle at which a cube would be tilted.
+	 * Calculates a very approximate angle at which a gripped cube would be
+	 * tilted.
 	 * 
 	 * @return Approximate angle above the horizontal, in degrees
 	 */
 	public double getAngle()
 	{
-		return this.tiltEnc.getDistance() * 100;
+		return ENC_DPR * -this.tiltEnc.getDistance();
 	}
 	
 	/**
