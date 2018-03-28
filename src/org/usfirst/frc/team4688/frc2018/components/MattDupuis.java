@@ -3,6 +3,7 @@
 package org.usfirst.frc.team4688.frc2018.components;
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 /**
  * Reads and processes input from the robot driver (after whom this class is
@@ -31,8 +32,14 @@ public class MattDupuis
 	private final int DEPLOY_BBTN = 1;
 	private final int CLIMB_BBTN = 2;
 	
+	// Length of rumble, in 1/50ths of a second
+	private final int RUMBLE_TIME = 15;
+	
 	// Xbox controller and button board
 	private Joystick driver, board;
+	
+	// Rumble timers
+	private int rumbleL, rumbleR;
 	
 	/**
 	 * Constructor.
@@ -42,6 +49,68 @@ public class MattDupuis
 		// Initialize joysticks
 		this.driver = new Joystick(DRIVER_USB);
 		this.board = new Joystick(BOARD_USB);
+		
+		// Initialize rumble timers
+		this.rumbleL = 0;
+		this.rumbleR = 0;
+	}
+	
+	/**
+	 * Updates the rumble pulse of the controller based on whether a switch is
+	 * pressed. The controller should only pulse each time the switch is pressed
+	 * and only once until it is released.
+	 * 
+	 * @param pressed True if the switch is pressed, false otherwise
+	 */
+	public void rumbleRight(boolean pressed)
+	{
+		// Activate rumble if switch is pressed while 
+		if ((pressed && this.rumbleR == 0) || this.rumbleR > 0)
+		{
+			double rumble = Math.sqrt(15 - this.rumbleR) / Math.sqrt(15d);
+			if (Double.isNaN(rumble) && !pressed)
+			{
+				this.rumbleR = 0;
+			}
+			else
+			{
+				this.rumbleR += 1;
+			}
+			this.driver.setRumble(RumbleType.kRightRumble, rumble);
+		}
+		else
+		{
+			this.rumbleR = 0;
+		}
+	}
+	
+	/**
+	 * Updates the rumble pulse of the controller based on whether a switch is
+	 * pressed. The controller should only pulse each time the switch is pressed
+	 * and only once until it is released.
+	 * 
+	 * @param pressed True if the switch is pressed, false otherwise
+	 */
+	public void rumbleLeft(boolean pressed)
+	{
+		// Activate rumble if switch is pressed while 
+		if ((pressed && this.rumbleL == 0) || this.rumbleL > 0)
+		{
+			double rumble = Math.sqrt(15 - this.rumbleL) / Math.sqrt(15d);
+			if (Double.isNaN(rumble) && !pressed)
+			{
+				this.rumbleL = 0;
+			}
+			else
+			{
+				this.rumbleL += 1;
+			}
+			this.driver.setRumble(RumbleType.kLeftRumble, rumble);
+		}
+		else
+		{
+			this.rumbleL = 0;
+		}
 	}
 	
 	/**

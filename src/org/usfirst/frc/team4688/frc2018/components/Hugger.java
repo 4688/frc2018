@@ -132,6 +132,10 @@ public class Hugger
 				spd = 0d;
 		}
 		this.setTiltSpd(spd);
+		
+		// Set controller rumble for limit switches
+		matt.rumbleRight(!this.lowLim.get());
+		matt.rumbleLeft(!this.highLim.get());
 	}
 	
 	/**
