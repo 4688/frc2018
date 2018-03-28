@@ -24,7 +24,7 @@ public class Lift
 	// Delay before allowing chain to move downwards, in 1/50s of a second
 	private final int UNLOCK_DELAY = 15;
 	
-	//
+	// Approximate inches raised per revolution of the lift motor
 	private final double ENC_IPR = 8.1d;
 	
 	// Lift motor PWM index
@@ -168,7 +168,7 @@ public class Lift
 	 */
 	public double getHeight()
 	{
-		return ENC_IPR * -this.liftEnc.getDistance();
+		return Math.max(ENC_IPR * -this.liftEnc.getDistance(), 0);
 	}
 	
 	/**

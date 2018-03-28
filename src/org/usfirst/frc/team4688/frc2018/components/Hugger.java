@@ -142,7 +142,7 @@ public class Hugger
 	 */
 	public double getAngle()
 	{
-		return ENC_DPR * -this.tiltEnc.getDistance();
+		return Math.min(Math.max(105 - ENC_DPR * -this.tiltEnc.getDistance(), 0), 105);
 	}
 	
 	/**
