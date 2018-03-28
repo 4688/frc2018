@@ -47,23 +47,29 @@ public class MattDupuis
 	/**
 	 * Gets the inverted forward axis between -1 and 1; 1 means 100% throttle
 	 * forward, 0 means no forward motion, and -1 means 100% throttle backwards.
+	 * The value is squared whilst preserving the sign to allow for finer
+	 * control at mid to low speeds.
 	 * 
 	 * @return The inverted forward axis, between -1 and 1
 	 */
 	public double getForward()
 	{
-		return -this.driver.getRawAxis(FORWARD_DAXIS);
+		double fwd = -this.driver.getRawAxis(FORWARD_DAXIS);
+		return fwd * Math.abs(fwd);
 	}
 	
 	/**
 	 * Gets the turning axis between -1 and 1; 1 means a full speed left turn, 0
 	 * means no turning motion, and -1 means a full speed right turn.
+	 * The value is squared whilst preserving the sign to allow for finer
+	 * control at mid to low speeds.
 	 * 
 	 * @return The turning axis, between -1 and 1
 	 */
 	public double getTurn()
 	{
-		return this.driver.getRawAxis(TURN_DAXIS);
+		double turn = this.driver.getRawAxis(TURN_DAXIS);
+		return turn * Math.abs(turn);
 	}
 	
 	/**
