@@ -92,7 +92,7 @@ public class Robot extends IterativeRobot
 	public void teleopPeriodic()
 	{
 		// Control components
-		this.drive.control(this.matt);
+		this.drive.control(this.matt, this.lift.getHeight());
 		this.hugger.control(this.matt);
 		this.lift.control(this.matt);
 		this.climber.control(this.matt);

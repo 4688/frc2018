@@ -406,10 +406,10 @@ public class Dashboard
 			this.tiltErrorEntry.setDouble(auto.tiltLoop.getError());
 			
 			// Retrieve new values and update loop constants
-			auto.driveLoop.update(this.getConstants(PIDType.Drive));
-			auto.gyroLoop.update(this.getConstants(PIDType.Gyro));
-			auto.liftLoop.update(this.getConstants(PIDType.Lift));
-			auto.tiltLoop.update(this.getConstants(PIDType.Tilt));
+			auto.driveLoop.reset(this.getConstants(PIDType.Drive));
+			auto.gyroLoop.reset(this.getConstants(PIDType.Gyro));
+			auto.liftLoop.reset(this.getConstants(PIDType.Lift));
+			auto.tiltLoop.reset(this.getConstants(PIDType.Tilt));
 		}
 	}
 	

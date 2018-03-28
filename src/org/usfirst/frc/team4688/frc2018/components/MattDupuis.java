@@ -67,7 +67,7 @@ public class MattDupuis
 		// Activate rumble if switch is pressed while 
 		if ((pressed && this.rumbleR == 0) || this.rumbleR > 0)
 		{
-			double rumble = Math.sqrt(15 - this.rumbleR) / Math.sqrt(15d);
+			double rumble = Math.sqrt(RUMBLE_TIME - this.rumbleR) / Math.sqrt(RUMBLE_TIME);
 			if (Double.isNaN(rumble) && !pressed)
 			{
 				this.rumbleR = 0;
@@ -96,7 +96,7 @@ public class MattDupuis
 		// Activate rumble if switch is pressed while 
 		if ((pressed && this.rumbleL == 0) || this.rumbleL > 0)
 		{
-			double rumble = Math.sqrt(15 - this.rumbleL) / Math.sqrt(15d);
+			double rumble = Math.sqrt(RUMBLE_TIME - this.rumbleL) / Math.sqrt(RUMBLE_TIME);
 			if (Double.isNaN(rumble) && !pressed)
 			{
 				this.rumbleL = 0;

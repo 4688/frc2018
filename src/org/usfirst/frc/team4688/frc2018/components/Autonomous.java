@@ -115,7 +115,7 @@ public class Autonomous
 			this.e = null;
 		}
 		
-		public void updateSetpoint(double newS)
+		public void resetSetpoint(double newS)
 		{
 			this.s = newS;
 			
@@ -123,15 +123,28 @@ public class Autonomous
 			this.e = null;
 		}
 		
-		public void update(Dashboard.PIDInfo theNew)
+		public void addSetpoint(double addS)
+		{
+			this.s += addS;
+			
+			this.I = 0d;
+			this.e = null;
+		}
+		
+		public void reset()
+		{
+			this.I = 0d;
+			this.e = null;
+		}
+		
+		public void reset(Dashboard.PIDInfo theNew)
 		{
 			this.s = theNew.s;
 			this.kP = theNew.kP;
 			this.kI = theNew.kI;
 			this.kD = theNew.kD;
 			
-			this.I = 0d;
-			this.e = null;
+			this.reset();
 		}
 		
 		public void calculate(double input)
