@@ -23,7 +23,7 @@ public class Hugger
 	private final double TILT_DOWN_SPD = 1d;
 	
 	// Encoder degrees tilted per revolution
-	private final double ENC_DPR = 20d;
+	private final double ENC_DPR = 64.75;
 	
 	// Intake motor CAN indices
 	private final int INTAKE_L_CAN = 5;

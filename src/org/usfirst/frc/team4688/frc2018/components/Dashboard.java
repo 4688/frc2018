@@ -115,7 +115,7 @@ public class Dashboard
 		this.tiltHighLimEntry = this.table.getEntry("tiltHighLim");
 		
 		// Lift entries
-		this.liftEntry = this.table.getEntry("lift");
+		this.liftEntry = this.table.getEntry("height");
 		this.liftLowLimEntry = this.table.getEntry("liftLowLim");
 		this.liftHighLimEntry = this.table.getEntry("liftHighLim");
 		

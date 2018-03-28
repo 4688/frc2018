@@ -22,7 +22,10 @@ public class Lift
 	private final double UNLOCKED_POS = 1d;
 	
 	// Delay before allowing chain to move downwards, in 1/50s of a second
-	private final int UNLOCK_DELAY = 20;
+	private final int UNLOCK_DELAY = 15;
+	
+	//
+	private final double ENC_IPR = 8.1d;
 	
 	// Lift motor PWM index
 	private final int LIFT_PWM = 1;
@@ -86,16 +89,15 @@ public class Lift
 	 */
 	public void control(MattDupuis matt)
 	{
+		System.out.println(this.getHeight());
 		// Lift actions
 		switch (matt.getLift())
 		{
 			case Raise:
-				System.out.println("raise\t" + this.lockTimer + "\t" + UNLOCK_DELAY);
 				this.disengageLock();
 				this.setLiftSpd(RAISE_SPD);
 				break;
 			case Lower:
-				System.out.println("lower\t" + this.lockTimer + "\t" + UNLOCK_DELAY);
 				this.disengageLock();
 				if (this.lockTimer >= UNLOCK_DELAY)
 				{
@@ -108,7 +110,6 @@ public class Lift
 				break;
 			case None:
 			default:
-				System.out.println("none\t" + this.lockTimer + "\t" + UNLOCK_DELAY);
 				this.engageLock();
 				this.setLiftSpd(0d);
 		}
@@ -131,11 +132,13 @@ public class Lift
 			(spd >= DEADBAND && this.highLim.get())
 		)
 		{
-			spd = 0d;
+			// Set motor speed
+			this.lifty.set(spd);
 		}
-		
-		// Set motor speed
-		this.lifty.set(spd);
+		else
+		{
+			this.lifty.set(0d);
+		}
 	}
 	
 	/**
@@ -165,7 +168,7 @@ public class Lift
 	 */
 	public double getHeight()
 	{
-		return this.liftEnc.getDistance() * 100;
+		return ENC_IPR * -this.liftEnc.getDistance();
 	}
 	
 	/**
