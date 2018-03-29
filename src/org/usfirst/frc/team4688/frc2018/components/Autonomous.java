@@ -2,6 +2,7 @@
 
 package org.usfirst.frc.team4688.frc2018.components;
 
+import java.util.ArrayList;
 import java.util.List;
 import edu.wpi.first.wpilibj.*;
 
@@ -54,10 +55,10 @@ public class Autonomous
 		this.a16 = new DigitalInput(AUTO16_DIO);
 		
 		// PID loops
-		this.driveLoop = new PIDLoop(0d, 0d, 0d, 0d);
-		this.gyroLoop = new PIDLoop(0d, 0d, 0d, 0d);
-		this.liftLoop = new PIDLoop(0d, 0d, 0d, 0d);
-		this.tiltLoop = new PIDLoop(0d, 0d, 0d, 0d);
+		this.driveLoop = new PIDLoop(0d, 0.0111d, 0d, 0d);
+		this.gyroLoop = new PIDLoop(0d, 0.0377d, 0d, 0d);
+		this.liftLoop = new PIDLoop(0d, 0.0600d, 0d, 0d);
+		this.tiltLoop = new PIDLoop(0d, -1.000d, 0d, 0d);
 		
 		// Auto routine tracking
 		this.p = 0;
@@ -177,6 +178,7 @@ public class Autonomous
 	public void update(DriveTrain drive, Hugger hugger, Lift lift)
 	{		
 		boolean done = false;
+		lift.disengageLock();
 		
 		// Map behavior to routine
 		Routine r;
@@ -305,6 +307,81 @@ public class Autonomous
 						break;
 				}
 				break;
+				
+			case MSwitchR:
+				switch (this.p)
+				{
+					case 0: // Drive forward
+						this.driveLoop.resetSetpoint(24d);
+						this.gyroLoop.resetSetpoint(0d);
+						if (driveLoop.isSettled(DRIVE_SETTLED)) this.p += 1;
+						break;
+					case 1: // Turn
+						this.gyroLoop.addSetpoint(45d);
+						if (gyroLoop.isSettled(GYRO_SETTLED)) this.p += 1;
+						break;
+					case 2: // Drive
+						this.driveLoop.addSetpoint(70d);
+						if (driveLoop.isSettled(DRIVE_SETTLED)) this.p += 1;
+						break;
+					case 3: // Turn back and raise lift
+						this.gyroLoop.resetSetpoint(0d);
+						this.liftLoop.resetSetpoint(20d);
+						if (gyroLoop.isSettled(GYRO_SETTLED) && liftLoop.isSettled(LIFT_SETTLED)) this.p += 1;
+						break;
+					case 4: // Advance and lower tilt
+						this.driveLoop.addSetpoint(15d);
+						this.tiltLoop.resetSetpoint(0d);
+						if (this.driveLoop.isSettled(DRIVE_SETTLED) && this.tiltLoop.isSettled(TILT_SETTLED)) this.p += 1;
+						break;
+					case 5: // EJECT
+						hugger.setIntakeSpd(0.5);
+						if (this.t > 50) this.p += 1;
+						this.t += 1;
+					default: // done
+						done = true;
+						break;
+				}
+				break;
+			
+			case MSwitchL:
+				switch (this.p)
+				{
+					case 0: // Drive forward
+						this.driveLoop.resetSetpoint(24d);
+						this.gyroLoop.resetSetpoint(0d);
+						if (driveLoop.isSettled(DRIVE_SETTLED)) this.p += 1;
+						break;
+					case 1: // Turn
+						this.gyroLoop.addSetpoint(-51d);
+						if (gyroLoop.isSettled(GYRO_SETTLED)) this.p += 1;
+						break;
+					case 2: // Drive
+						this.driveLoop.addSetpoint(70d);
+						if (driveLoop.isSettled(DRIVE_SETTLED)) this.p += 1;
+						break;
+					case 3: // Turn back and raise lift
+						this.gyroLoop.resetSetpoint(0d);
+						this.liftLoop.resetSetpoint(20d);
+						if (gyroLoop.isSettled(GYRO_SETTLED) && liftLoop.isSettled(LIFT_SETTLED)) this.p += 1;
+						break;
+					case 4: // Advance and lower tilt
+						this.driveLoop.addSetpoint(15d);
+						this.tiltLoop.resetSetpoint(0d);
+						if (this.driveLoop.isSettled(DRIVE_SETTLED) && this.tiltLoop.isSettled(TILT_SETTLED)) this.p += 1;
+						break;
+					case 5: // EJECT
+						hugger.setIntakeSpd(0.5);
+						if (this.t > 50) this.p += 1;
+						this.t += 1;
+					default: // done
+						done = true;
+						break;
+				}
+				break;
+				
+			default:
+				break;
 		}
 		
 		// Update loops
@@ -365,6 +442,7 @@ public class Autonomous
 			this.I = 0d;
 			this.D = 0d;
 			this.e = null;
+			this.e50 = new ArrayList<Double>();
 		}
 		
 		public void resetSetpoint(double newS)
@@ -397,12 +475,15 @@ public class Autonomous
 		
 		public void reset(Dashboard.PIDInfo theNew)
 		{
-			this.s = theNew.s;
-			this.kP = theNew.kP;
-			this.kI = theNew.kI;
-			this.kD = theNew.kD;
-			
-			this.reset();
+			if (this.s != theNew.s || this.kP != theNew.kP || this.kI != theNew.kI || this.kD != theNew.kD)
+			{
+				this.s = theNew.s;
+				this.kP = theNew.kP;
+				this.kI = theNew.kI;
+				this.kD = theNew.kD;
+				
+				this.reset();
+			}
 		}
 		
 		public void calculate(double input)

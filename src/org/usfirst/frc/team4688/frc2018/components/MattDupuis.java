@@ -29,8 +29,12 @@ public class MattDupuis
 	private final int LOWER_DBTN = 5;
 	
 	// Button board indices
-	private final int DEPLOY_BBTN = 1;
-	private final int CLIMB_BBTN = 2;
+	private final int DEPLOY_BBTN = 12;
+	private final int CLIMB_BBTN = 11;
+	private final int LIFTRAISE_BBTN = 8;
+	private final int LIFTLOWER_BBTN = 10;
+	private final int TILTUP_BBTN = 7;
+	private final int TILTDN_BBNT = 9;
 	
 	// Length of rumble, in 1/50ths of a second
 	private final int RUMBLE_TIME = 15;
