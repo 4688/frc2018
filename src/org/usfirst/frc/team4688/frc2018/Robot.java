@@ -95,7 +95,7 @@ public class Robot extends IterativeRobot
 		this.drive.control(this.matt, this.lift.getHeight());
 		this.hugger.control(this.matt);
 		this.lift.control(this.matt);
-		this.climber.control(this.matt);
+		this.climber.control(this.matt, this.lift);
 	}
 	
 	/**
@@ -104,7 +104,7 @@ public class Robot extends IterativeRobot
 	public void autonomousInit()
 	{
 		this.dashboard.updateMode(Dashboard.Mode.Auto);
-		this.auto.retrieveRNG();
+		this.auto.reset();
 	}
 	
 	/**

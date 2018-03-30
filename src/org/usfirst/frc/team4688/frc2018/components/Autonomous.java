@@ -87,6 +87,18 @@ public class Autonomous
 		return n1 + n2 + n4 + n8 + n16;
 	}
 	
+	public void reset()
+	{
+		System.out.println("---");
+		System.out.println("Resetting PID");
+		System.out.println("Drive: " + driveLoop.s + " / " + driveLoop.kP);
+		System.out.println("Gyro: " + gyroLoop.s + " / " + gyroLoop.kP);
+		System.out.println("Lift: " + liftLoop.s + " / " + liftLoop.kP);
+		System.out.println("Tilt: " + tiltLoop.s + " / " + tiltLoop.kP);
+		this.t = 0;
+		this.p = 0;
+	}
+	
 	/**
 	 * Enumeration of possible autonomous behaviors.
 	 */
@@ -169,7 +181,12 @@ public class Autonomous
 	
 	public void retrieveRNG()
 	{
-		this.rng = DriverStation.getInstance().getGameSpecificMessage() + "   ";
+		do
+		{
+			this.rng = DriverStation.getInstance().getGameSpecificMessage();
+		}
+		while (this.rng.length() < 3);
+		System.out.println("Retrieved game data: " + this.rng);
 	}
 	
 	/**
@@ -291,27 +308,49 @@ public class Autonomous
 		switch (r)
 		{
 			case Nothing:
+				done = true;
 				break;
 			
 			case RBaseline:
-			case LBaseline:
 				switch (this.p)
 				{
-					case 0: // Drive forward
-						this.driveLoop.resetSetpoint(148d);
+					//
+					
+					/*case 0: // Drive forward
+						this.driveLoop.resetSetpoint(134d);
 						this.gyroLoop.resetSetpoint(0d);
 						if (driveLoop.isSettled(DRIVE_SETTLED)) this.p += 1;
 						break;
 					default: // Done
 						done = true;
 						break;
+					//*/
+				}
+				break;
+				
+			case LBaseline:
+				switch (this.p)
+				{
+					//
+					
+					/*case 0: // Drive forward
+						this.driveLoop.resetSetpoint(162d);
+						this.gyroLoop.resetSetpoint(0d);
+						if (driveLoop.isSettled(DRIVE_SETTLED)) this.p += 1;
+						break;
+					default: // Done
+						done = true;
+						break;
+					//*/
 				}
 				break;
 				
 			case MSwitchR:
 				switch (this.p)
 				{
-					case 0: // Drive forward
+					//
+					
+					/*case 0: // Drive forward
 						this.driveLoop.resetSetpoint(24d);
 						this.gyroLoop.resetSetpoint(0d);
 						if (driveLoop.isSettled(DRIVE_SETTLED)) this.p += 1;
@@ -341,13 +380,16 @@ public class Autonomous
 					default: // done
 						done = true;
 						break;
+					//*/
 				}
 				break;
 			
 			case MSwitchL:
 				switch (this.p)
 				{
-					case 0: // Drive forward
+					//
+					
+					/*case 0: // Drive forward
 						this.driveLoop.resetSetpoint(24d);
 						this.gyroLoop.resetSetpoint(0d);
 						if (driveLoop.isSettled(DRIVE_SETTLED)) this.p += 1;
@@ -377,6 +419,7 @@ public class Autonomous
 					default: // done
 						done = true;
 						break;
+					//*/
 				}
 				break;
 				
@@ -391,16 +434,16 @@ public class Autonomous
 		this.tiltLoop.calculate(hugger.getAngle());
 				
 		// Gains
-		double gDrive = this.driveLoop.get();
-		double gGyro = this.gyroLoop.get();
+		double gDrive = Math.min(Math.max(this.driveLoop.get(), -0.5d), 0.5d);
+		double gGyro = Math.min(Math.max(this.gyroLoop.get(), -0.5d), 0.5d);
 		double gLift = this.liftLoop.get();
-		double gTilt = this.tiltLoop.get();
+		double gTilt = Math.min(Math.max(this.tiltLoop.get(), -1d), 1d);
 				
 		// Set motor speeds
 		if (!done)
 		{
-			drive.setLSpd(gDrive + gGyro);
-			drive.setRSpd(-gDrive);
+			drive.setLSpd(gDrive);
+			drive.setRSpd(-gDrive + gGyro);
 			lift.setLiftSpd(gLift);
 			hugger.setTiltSpd(gTilt);
 		}

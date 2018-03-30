@@ -52,13 +52,13 @@ public class Climber
 	 * 
 	 * @param matt The Matt operating the robot
 	 */
-	public void control(MattDupuis matt)
+	public void control(MattDupuis matt, Lift lift)
 	{
 		// Climber action
 		MattDupuis.Climber climb = matt.getClimber();
 		
 		// If the robot is being deployed, set the deploy timer
-		if (climb == MattDupuis.Climber.Deploy)
+		if (climb == MattDupuis.Climber.Deploy && lift.getLowLim())
 		{
 			this.deployTimer = DEPLOY_TIME;
 		}

@@ -89,7 +89,6 @@ public class Lift
 	 */
 	public void control(MattDupuis matt)
 	{
-		System.out.println(this.getHeight());
 		// Lift actions
 		switch (matt.getLift())
 		{
