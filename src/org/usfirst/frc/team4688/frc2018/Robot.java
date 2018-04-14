@@ -105,6 +105,7 @@ public class Robot extends IterativeRobot
 	{
 		this.dashboard.updateMode(Dashboard.Mode.Auto);
 		this.auto.reset();
+		this.auto.retrieveRNG();
 	}
 	
 	/**

@@ -13,13 +13,13 @@ import com.ctre.phoenix.motorcontrol.can.*;
 public class Climber
 {
 	// Motor speed for cutting the string
-	private final double CUTTER_SPD = -1d;
+	private final double CUTTER_SPD = 1d;
 	
 	// Motor speed for climbing
 	private final double CLIMB_SPD = 1d;
 	
 	// Iterations taken to to cut the release string, in 1/50ths of a second
-	private final int DEPLOY_TIME = 20;
+	private final int DEPLOY_TIME = 25;
 	
 	// Climb motor CAN index (both motors on same controller)
 	private final int CLIMBER_CAN = 7;
@@ -58,7 +58,7 @@ public class Climber
 		MattDupuis.Climber climb = matt.getClimber();
 		
 		// If the robot is being deployed, set the deploy timer
-		if (climb == MattDupuis.Climber.Deploy && lift.getLowLim())
+		if (climb == MattDupuis.Climber.Deploy && this.deployTimer <= 0 && lift.getLowLim())
 		{
 			this.deployTimer = DEPLOY_TIME;
 		}
@@ -75,11 +75,14 @@ public class Climber
 			// Decrement timer
 			this.deployTimer -= 1;
 		}
-		
 		// If the robot is retracting the climber and is finished deploying:
-		if (climb == MattDupuis.Climber.Climb && this.deployed)
+		else if (climb == MattDupuis.Climber.Climb && this.deployed)
 		{
 			this.reacher.set(ControlMode.PercentOutput, CLIMB_SPD);
+		}
+		else
+		{
+			this.reacher.set(ControlMode.PercentOutput, 0d);
 		}
 	}
 	

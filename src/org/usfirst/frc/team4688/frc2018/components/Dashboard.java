@@ -66,7 +66,10 @@ public class Dashboard
 	private NetworkTableEntry liftGainEntry, liftErrorEntry;
 	private NetworkTableEntry tiltGainEntry, tiltErrorEntry;
 	
-	// Camera and server
+	// Network
+	private NetworkTableEntry networkTime;
+	
+	/*// Camera and server
 	private UsbCamera camera;
 	private MjpegServer server;
 	//*/
@@ -151,8 +154,10 @@ public class Dashboard
 		this.tiltGainEntry = this.table.getEntry("PID/tilt/gain");
 		this.tiltErrorEntry = this.table.getEntry("PID/tilt/error");
 		
+		this.networkTime = this.table.getEntry("networkTime");
+		
 		// Set up and start streaming camera feed to server
-		this.camera = new UsbCamera("cam0", 0);
+		/*this.camera = new UsbCamera("cam0", 0);
 		this.server = new MjpegServer("server0", CAMERA_PORT);
 		this.server.setSource(this.camera);
 		//*/
@@ -166,6 +171,7 @@ public class Dashboard
 	 */
 	public void tick()
 	{
+		this.networkTime.setDouble(NetworkTablesJNI.now());
 		this.timer += 1;
 	}
 	

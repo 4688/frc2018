@@ -15,13 +15,13 @@ public class Autonomous
 {
 	// Settling time for PID; error must be consistently near 0 for this many
 	// 1/50ths of a second in order to continue
-	private final int SETTLING_TIME = 20;
+	private final int SETTLING_TIME = 30;
 	
 	// Settling thresholds
-	private final double DRIVE_SETTLED = 1d;
+	private final double DRIVE_SETTLED = 3d;
 	private final double GYRO_SETTLED = 1d;
-	private final double LIFT_SETTLED = 1d;
-	private final double TILT_SETTLED = 2.5d;
+	private final double LIFT_SETTLED = 3d;
+	private final double TILT_SETTLED = 4d;
 	
 	// DIO indices for autonomous select inputs
 	private final int AUTO1_DIO = 19;
@@ -57,8 +57,8 @@ public class Autonomous
 		// PID loops
 		this.driveLoop = new PIDLoop(0d, 0.0111d, 0d, 0d, DRIVE_SETTLED);
 		this.gyroLoop = new PIDLoop(0d, 0.0377d, 0d, 0d, GYRO_SETTLED);
-		this.liftLoop = new PIDLoop(0d, 0.0600d, 0d, 0d, LIFT_SETTLED);
-		this.tiltLoop = new PIDLoop(100d, -1.000d, 0d, 0d, TILT_SETTLED);
+		this.liftLoop = new PIDLoop(0d, 0.0750d, 0d, 0d, LIFT_SETTLED);
+		this.tiltLoop = new PIDLoop(99d, -10.000d, 0d, 0d, TILT_SETTLED);
 		
 		// Auto routine tracking
 		this.p = 0;
@@ -89,12 +89,6 @@ public class Autonomous
 	
 	public void reset()
 	{
-		System.out.println("---");
-		System.out.println("Resetting PID");
-		System.out.println("Drive: " + driveLoop.s + " / " + driveLoop.kP);
-		System.out.println("Gyro: " + gyroLoop.s + " / " + gyroLoop.kP);
-		System.out.println("Lift: " + liftLoop.s + " / " + liftLoop.kP);
-		System.out.println("Tilt: " + tiltLoop.s + " / " + tiltLoop.kP);
 		this.t = 0;
 		this.p = 0;
 	}
@@ -305,295 +299,282 @@ public class Autonomous
 		}
 		
 		// Perform auto route
-		switch (r)
+		if (r == Routine.Nothing)
 		{
-			case Nothing:
-				done = true;
-				break;
-			
-			case RBaseline:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(147.5d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					default: // Done
-						done = true;
-						break;
-				}
-				break;
-				
-			case RSwitch:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(147.5d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 1: // Turn and raise lift
-						this.gyroLoop.setpoint(-90d);
-						this.liftLoop.setpoint(24d);
-						this.tiltLoop.setpoint(0d);
-						if (this.gyroLoop.isSettled() && this.liftLoop.isSettled()) this.p += 1;
-						break;
-					case 2: // Advance
-						this.driveLoop.setpoint(147.5d + 19.1d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-					case 3: // Drop cube
-						hugger.setIntakeSpd(0.4d);
-						if (this.t >= 50)
-						{
-							hugger.setIntakeSpd(0d);
-							this.t = 0;
-							this.p += 1;
-						}
-						else
-						{
-							this.t += 1;
-						}
-						break;
-					default: // Done
-						done = true;
-						break;
-				}
-				break;
-			
-			case RScale:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(300d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 1: // Turn and raise lift
-						this.gyroLoop.setpoint(-90d);
-						this.liftLoop.setpoint(66d);
-						this.tiltLoop.setpoint(30d);
-						if (this.gyroLoop.isSettled() && this.liftLoop.isSettled()) this.p += 1;
-						break;
-					case 2: // Launch cube
-						hugger.setIntakeSpd(0.8d);
-						if (this.t >= 50)
-						{
-							hugger.setIntakeSpd(0d);
-							this.t = 0;
-							this.p += 1;
-						}
-						else
-						{
-							this.t += 1;
-						}
-						break;
-					default:
-						done = true;
-						break;
-				}
-				break;
-				
-			case LBaseline:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(147.5d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					default: // Done
-						done = true;
-						break;
-				}
-				break;
-				
-			case LSwitch:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(147.5d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 1: // Turn and raise lift
-						this.gyroLoop.setpoint(90d);
-						this.liftLoop.setpoint(24d);
-						this.tiltLoop.setpoint(0d);
-						if (this.gyroLoop.isSettled() && this.liftLoop.isSettled()) this.p += 1;
-						break;
-					case 2: // Advance
-						this.driveLoop.setpoint(147.5d + 19.1d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-					case 3: // Drop cube
-						hugger.setIntakeSpd(0.4d);
-						if (this.t >= 50)
-						{
-							hugger.setIntakeSpd(0d);
-							this.t = 0;
-							this.p += 1;
-						}
-						else
-						{
-							this.t += 1;
-						}
-						break;
-					default: // Done
-						done = true;
-						break;
-				}
-				break;
-				
-			case LScale:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(300d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 1: // Turn and raise lift
-						this.gyroLoop.setpoint(90d);
-						this.liftLoop.setpoint(66d);
-						this.tiltLoop.setpoint(30d);
-						if (this.gyroLoop.isSettled() && this.liftLoop.isSettled()) this.p += 1;
-						break;
-					case 2: // Launch cube
-						hugger.setIntakeSpd(0.8d);
-						if (this.t >= 50)
-						{
-							hugger.setIntakeSpd(0d);
-							this.t = 0;
-							this.p += 1;
-						}
-						else
-						{
-							this.t += 1;
-						}
-						break;
-					default:
-						done = true;
-						break;
-				}
-				break;
-			
-			case MBaseline:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(24d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 1: // Turn
-						this.gyroLoop.setpoint(45d);
-						if (this.gyroLoop.isSettled()) this.p += 1;
-						break;
-					case 2: // Drive while turned
-						this.driveLoop.setpoint(24d + 68.63d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 3: // Turn back
-						this.gyroLoop.setpoint(0d);
-						if (this.gyroLoop.isSettled()) this.p += 1;
-						break;
-					case 4: // Advance
-						this.driveLoop.setpoint(24d + 68.63d + 26.93d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-					default: // Done
-						done = true;
-						break;
-				}
-				break;
-				
-			case MSwitchR:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(24d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 1: // Turn
-						this.gyroLoop.setpoint(45d);
-						if (this.gyroLoop.isSettled()) this.p += 1;
-						break;
-					case 2: // Drive while turned
-						this.driveLoop.setpoint(24d + 68.63d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 3: // Turn back and raise lift
-						this.gyroLoop.setpoint(0d);
-						this.liftLoop.setpoint(24d);
-						if (this.gyroLoop.isSettled() && this.liftLoop.isSettled()) this.p += 1;
-						break;
-					case 4: // Advance and lower tilt
-						this.driveLoop.setpoint(24d + 68.63d + 26.93d);
-						this.tiltLoop.setpoint(0d);
-						if (this.driveLoop.isSettled() && this.tiltLoop.isSettled()) this.p += 1;
-					case 5: // Drop cube
-						hugger.setIntakeSpd(0.4d);
-						if (this.t >= 50)
-						{
-							hugger.setIntakeSpd(0d);
-							this.t = 0;
-							this.p += 1;
-						}
-						else
-						{
-							this.t += 1;
-						}
-						break;
-					default: // Done
-						done = true;
-						break;
-				}
-				break;
-			
-			case MSwitchL:
-				switch (this.p)
-				{
-					case 0: // Drive forward
-						this.driveLoop.setpoint(24d);
-						this.gyroLoop.setpoint(0d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 1: // Turn
-						this.gyroLoop.setpoint(-50.80d);
-						if (this.gyroLoop.isSettled()) this.p += 1;
-						break;
-					case 2: // Drive while turned
-						this.driveLoop.setpoint(24d + 76.78d);
-						if (this.driveLoop.isSettled()) this.p += 1;
-						break;
-					case 3: // Turn back and raise lift
-						this.gyroLoop.setpoint(0d);
-						this.liftLoop.setpoint(24d);
-						if (this.gyroLoop.isSettled() && this.liftLoop.isSettled()) this.p += 1;
-						break;
-					case 4: // Advance and lower tilt
-						this.driveLoop.setpoint(24d + 76.78d + 26.93d);
-						this.tiltLoop.setpoint(0d);
-						if (this.driveLoop.isSettled() && this.tiltLoop.isSettled()) this.p += 1;
-					case 5: // Drop cube
-						hugger.setIntakeSpd(0.4d);
-						if (this.t >= 50)
-						{
-							hugger.setIntakeSpd(0d);
-							this.t = 0;
-							this.p += 1;
-						}
-						else
-						{
-							this.t += 1;
-						}
-						break;
-					default: // Done
-						done = true;
-						break;
-				}
-				break;
+			done = true;
 		}
+		
+		if (r == Routine.RBaseline)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive forward
+					this.driveLoop.setpoint(135.4d);
+					this.gyroLoop.setpoint(0d);
+					this.liftLoop.setpoint(30d);
+					//if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				default: // Done
+					done = true;
+					break;
+			}
+		}
+				
+		if (r == Routine.RSwitch)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive forward
+					this.driveLoop.setpoint(135.4d);
+					this.gyroLoop.setpoint(0d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				case 1: // Turn and raise lift
+					this.gyroLoop.setpoint(-90d);
+					this.liftLoop.setpoint(30d);
+					this.tiltLoop.setpoint(0d);
+					if (this.gyroLoop.isSettled() && this.liftLoop.isSettled() && this.tiltLoop.isSettled()) this.p += 1;
+					break;
+				case 2: // Advance
+					this.driveLoop.setpoint(135.4d + 4d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+				case 3: // Drop cube
+					hugger.setIntakeSpd(0.4d);
+					if (this.t >= 100)
+					{
+						hugger.setIntakeSpd(0d);
+						this.t = 0;
+						this.p += 1;
+					}
+					else
+					{
+						this.t += 1;
+					}
+					break;
+					default: // Done
+						done = true;
+						break;
+				}
+			}
+			
+		if (r == Routine.RScale)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive forward
+					this.driveLoop.setpoint(247d);
+					this.gyroLoop.setpoint(0d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				case 1: // Turn and raise lift
+					this.gyroLoop.setpoint(-37d);
+					this.liftLoop.setpoint(60d);
+					if (this.gyroLoop.isSettled() && this.liftLoop.isSettled()) this.p += 1;
+					break;
+				case 2: // Lower cube
+					this.tiltLoop.setpoint(15d);
+					if (this.tiltLoop.isSettled()) this.p += 1;
+					break;
+				case 3: // Launch cube
+					hugger.setIntakeSpd(0.5d);
+					if (this.t >= 100)
+					{
+						hugger.setIntakeSpd(0d);
+						this.t = 0;
+						this.p += 1;
+					}
+					else
+					{
+						this.t += 1;
+					}
+					break;
+				default:
+					done = true;
+					break;
+			}
+		}
+		//*/
+				
+		if (r == Routine.LBaseline)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive forward
+					this.driveLoop.setpoint(159d);
+					this.gyroLoop.setpoint(0d);
+					this.liftLoop.setpoint(30d);
+					//if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				default: // Done
+					done = true;
+					break;
+			}
+		}
+				
+		if (r == Routine.LSwitch)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive forward
+					this.driveLoop.setpoint(159d);
+					this.gyroLoop.setpoint(0d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				case 1: // Turn and raise lift
+					this.gyroLoop.setpoint(90d);
+					this.liftLoop.setpoint(30d);
+					this.tiltLoop.setpoint(0d);
+					if (this.gyroLoop.isSettled() && this.liftLoop.isSettled() && this.tiltLoop.isSettled()) this.p += 1;
+					break;
+				case 2: // Advance
+					this.driveLoop.setpoint(159d + 31d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+				case 3: // Drop cube
+					hugger.setIntakeSpd(0.5d);
+					if (this.t >= 100)
+					{
+						hugger.setIntakeSpd(0d);
+						this.t = 0;
+						this.p += 1;
+					}
+					else
+					{
+						this.t += 1;
+					}
+					break;
+				default: // Done
+					done = true;
+					break;
+			}
+		}
+		//*/
+				
+		if (r == Routine.LScale)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive forward
+					this.driveLoop.setpoint(311d);
+					this.gyroLoop.setpoint(0d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				case 1: // Turn and raise lift
+					this.gyroLoop.setpoint(90d);
+					this.liftLoop.setpoint(60d);
+					this.tiltLoop.setpoint(30d);
+					if (this.gyroLoop.isSettled() && this.liftLoop.isSettled() && this.tiltLoop.isSettled()) this.p += 1;
+					break;
+				case 2: // Launch cube
+					hugger.setIntakeSpd(0.5d);
+					if (this.t >= 100)
+					{
+						hugger.setIntakeSpd(0d);
+						this.t = 0;
+						this.p += 1;
+					}
+					else
+					{
+						this.t += 1;
+					}
+					break;
+				//*/
+				default:
+					done = true;
+					break;
+			}
+		}
+			
+		if (r == Routine.MBaseline)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive forward
+					this.driveLoop.setpoint(24d);
+					this.gyroLoop.setpoint(0d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				case 1: // Turn
+					this.gyroLoop.setpoint(25d);
+					if (this.gyroLoop.isSettled()) this.p += 1;
+					break;
+				case 2: // Drive while turned
+					this.driveLoop.setpoint(24d + 102d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				default: // Done
+					done = true;
+					break;
+			}
+		}
+				
+		if (r == Routine.MSwitchR)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive forward
+					this.driveLoop.setpoint(24d);
+					this.gyroLoop.setpoint(0d);
+					if (this.driveLoop.isSettled()) this.p += 1;
+					break;
+				case 1: // Turn
+					this.gyroLoop.setpoint(25d);
+					if (this.gyroLoop.isSettled()) this.p += 1;
+					break;
+				case 2: // Drive while turned and raise lift
+					this.driveLoop.setpoint(24d + 102d);
+					this.liftLoop.setpoint(30d);
+					this.tiltLoop.setpoint(15d);
+					if (this.driveLoop.isSettled() && this.liftLoop.isSettled() && this.tiltLoop.isSettled()) this.p += 1;
+					break;
+				case 3: // Drop cube
+					hugger.setIntakeSpd(0.5d);
+					if (this.t >= 100)
+					{
+						hugger.setIntakeSpd(0d);
+						this.t = 0;
+						this.p += 1;
+					}
+					else
+					{
+						this.t += 1;
+					}
+					break;
+				default: // Done
+					done = true;
+					break;
+			}
+		}
+			
+		if (r == Routine.MSwitchL)
+		{
+			switch (this.p)
+			{
+				case 0: // Drive on angle
+					this.driveLoop.setpoint(99d);
+					this.gyroLoop.setpoint(-25d);
+					this.liftLoop.setpoint(28d);
+					this.tiltLoop.setpoint(15d);
+					if (this.driveLoop.isSettled() && this.liftLoop.isSettled() && this.tiltLoop.isSettled()) this.p += 1;
+					break;
+				case 1: // Get cube in switch BOI
+					hugger.setIntakeSpd(0.4d);
+					if (this.t >= 50)
+					{
+						hugger.setIntakeSpd(0d);
+						this.t = 0;
+						this.p += 1;
+					}
+					else
+					{
+						this.t += 1;
+					}
+					break;
+				default: // Done
+					done = true;
+					break;
+			}
+		}
+		//*/
 		
 		// Update loops
 		this.driveLoop.calculate(drive.getDistance());
@@ -679,6 +660,7 @@ public class Autonomous
 		
 		public void reset(Dashboard.PIDInfo theNew)
 		{
+			/*
 			if (this.s != theNew.s || this.kP != theNew.kP || this.kI != theNew.kI || this.kD != theNew.kD)
 			{
 				this.s = theNew.s;
@@ -688,6 +670,7 @@ public class Autonomous
 				
 				this.reset();
 			}
+			*/
 		}
 		
 		public void calculate(double input)
@@ -701,7 +684,7 @@ public class Autonomous
 			}
 			this.e = this.s - input;
 			this.e50.add((double) this.e);
-			while (this.e50.size() > 25)
+			while (this.e50.size() > SETTLING_TIME)
 			{
 				this.e50.remove(0);
 			}
@@ -709,11 +692,16 @@ public class Autonomous
 		
 		public boolean isSettled()
 		{
-			for (double e : this.e50)
+			/*for (double e : this.e50)
 			{
 				if (Math.abs(e) > this.threshold) return false;
 			}
-			return this.e50.size() > 0;
+			return true;//*/
+			if (e instanceof Double)
+			{
+				return Math.abs((double) e) <= this.threshold;
+			}
+			return false;
 		}
 		
 		public double get()

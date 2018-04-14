@@ -155,7 +155,7 @@ public class DriveTrain
 		double turbo = 1d + matt.getTurbo() * (TURBO_FACTOR - 1d);
 		
 		// Height-based slowdown factor
-		double height = 1d / (1d + liftHeight / 64d);
+		double height = 1d / (1d + liftHeight / 128d);
 		
 		// Final left/right speeds
 		double l = 0d, r = 0d;

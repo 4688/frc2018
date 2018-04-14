@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.*;
 public class Lift
 {
 	// Raising lift speed
-	private final double RAISE_SPD = 0.9d;
+	private final double RAISE_SPD = 1d;
 	
 	// Lowering lift speed
-	private final double LOWER_SPD = -0.6d;
+	private final double LOWER_SPD = -0.7d;
 	
 	// Unlocked and locked servo positions
 	private final double LOCKED_POS = 0.2d;
